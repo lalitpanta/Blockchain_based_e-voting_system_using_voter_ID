@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const pdfkit = require('pdfkit');
 const QRCode = require('qrcode');
+const { exec } = require('child_process');
 
 
 
@@ -45,64 +46,180 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 
-const contractAddress = '0x71D37c6a81dACB6B67908F9e03873BAE783906d3'; 
+const contractAddress = '0xC8700293f81A1265b7730332cead8674CD6CCCAC'; 
 const contractABI = [
     {
-        "inputs": [],
-        "name": "candidateCount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
+      "inputs": [],
+      "name": "candidateCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "candidates",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "name",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "party",
-                "type": "string"
-            },
-            {
-                "internalType": "uint256",
-                "name": "voteCount",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "candidates",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "party",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "position",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "voteCount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "candidateId",
-                "type": "uint256"
-            }
-        ],
-        "name": "vote",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+      "inputs": [],
+      "name": "voterCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_party",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_position",
+          "type": "string"
+        }
+      ],
+      "name": "addCandidate",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "candidateId",
+          "type": "uint256"
+        }
+      ],
+      "name": "vote",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "candidateId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCandidate",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "party",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "position",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "voteCount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "position",
+          "type": "string"
+        }
+      ],
+      "name": "hasVotedForPosition",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "hasVoted",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
     }
-];
+  ];
 
 // MySQL database connection
 const db = mysql.createConnection({
@@ -273,9 +390,7 @@ app.post('/signin', (req, res) => {
 // API add voter information
 app.post('/addVoterInfo', (req, res) => {
     const {
-        citizenship_no, name, dob, gender, father_name, mother_name, provience,
-        district, Municipality, ward_no, voter_id, issued_date, issued_name,
-        authorizer_position, contact, email, document = null
+        citizenship_no, name, dob, gender,nea_membership_no,voter_id, issued_date, issued_name, contact, email, document = null
     } = req.body;
 
     const searchSql = 'SELECT * FROM voter WHERE email = ? OR voter_id = ? OR citizenship_no = ?';
@@ -290,15 +405,11 @@ app.post('/addVoterInfo', (req, res) => {
         } else {
             const insertSql = `
                 INSERT INTO voter (
-                    citizenship_no, name, dob, gender, father_name, mother_name, provience,
-                    district, Municipality, ward_no, voter_id, issued_date, issued_name,
-                    authorizer_position, contact, email, document
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                    citizenship_no, name, dob, gender,nea_membership_no, voter_id, issued_date, issued_name, contact, email, document
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
 
             db.query(insertSql, [
-                citizenship_no, name, dob, gender, father_name, mother_name, provience,
-                district, Municipality, ward_no, voter_id, issued_date, issued_name,
-                authorizer_position, contact, email, document
+                citizenship_no, name, dob, gender, nea_membership_no,voter_id, issued_date, issued_name,  contact, email, document
             ], (error) => {
                 if (error) {
                     console.error('Insert error:', error);
@@ -314,11 +425,13 @@ app.post('/addVoterInfo', (req, res) => {
     });
 });
 
+
+
+
 // API add candidate information
 app.post('/addCandidateInfo', (req, res) => {
     const {
-        citizenship_no, name, dob, gender, father_name, mother_name, provience,
-        district, Municipality, ward_no, voter_id, issued_date, issued_name,
+       id, citizenship_no, name, dob, gender,nea_membership_no, voter_id,
         authorizer_position, contact, email, candidate_id, party_name,
         voting_date, start_time, ending_time, document = null
     } = req.body;
@@ -335,15 +448,13 @@ app.post('/addCandidateInfo', (req, res) => {
         } else {
             const insertSql = `
                 INSERT INTO candidate (
-                    citizenship_no, name, dob, gender, father_name, mother_name, provience,
-                    district, Municipality, ward_no, voter_id, issued_date, issued_name,
+                   id, citizenship_no, name, dob, gender, nea_membership_no, voter_id,
                     authorizer_position, contact, email, candidate_id, party_name, 
                     voting_date, start_time, ending_time, document
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?)`;
 
             db.query(insertSql, [
-                citizenship_no, name, dob, gender, father_name, mother_name, provience,
-                district, Municipality, ward_no, voter_id, issued_date, issued_name,
+               id, citizenship_no, name, dob, gender,nea_membership_no, voter_id,
                 authorizer_position, contact, email, candidate_id, party_name,
                 voting_date, start_time, ending_time, document
             ], (error) => {
@@ -360,6 +471,15 @@ app.post('/addCandidateInfo', (req, res) => {
         }
     });
 });
+
+
+
+
+
+
+
+
+
 
 // API get all voters
 app.get('/getAllVoter', (req, res) => {
@@ -977,28 +1097,6 @@ app.get('/voter/:voter_id', async (req, res) => {
     });
   });
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
