@@ -12,12 +12,12 @@ const { exec } = require('child_process');
 
 
 
-
+const jwt = require("jsonwebtoken");
 
 
 const app = express();
 const port = 3000;
-
+const SECRET_KEY = "your_secret_key";
 
 
 
@@ -46,180 +46,245 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 
-const contractAddress = '0xC8700293f81A1265b7730332cead8674CD6CCCAC'; 
-const contractABI = [
-    {
-      "inputs": [],
-      "name": "candidateCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "candidates",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "party",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "position",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "voteCount",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [],
-      "name": "voterCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_name",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_party",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_position",
-          "type": "string"
-        }
-      ],
-      "name": "addCandidate",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "success",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "candidateId",
-          "type": "uint256"
-        }
-      ],
-      "name": "vote",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "success",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "candidateId",
-          "type": "uint256"
-        }
-      ],
-      "name": "getCandidate",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "party",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "position",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "voteCount",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "voter",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "position",
-          "type": "string"
-        }
-      ],
-      "name": "hasVotedForPosition",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "hasVoted",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
+
+
+
+
+
+
+
+
+
+
+let contractAddress;
+const axios = require('axios');
+
+// yeta nai contract address chaiyeko huna le yetai fetch gareko
+async function getContractAddress() {
+    try {
+        const response = await axios.get('http://localhost:3000/api/contract');
+        const contractAddress = response.data.contractAddress || 'No address found';
+        return contractAddress;
+    } catch (error) {
+        console.error('Error fetching contract address:', error);
+        return 'Error fetching contract address';
     }
-  ];
+}
+
+
+async function useContractAddress() {
+    const contractAddress = await getContractAddress();
+    console.log('my contract address is :', contractAddress);
+}
+
+
+useContractAddress();
+
+
+
+
+
+
+
+
+
+
+
+
+// const contractAddress = '0x7F46dfD6BF293D2347f9EfdaB16c5929B51f8394'; 
+const contractABI = [
+  {
+    "inputs": [],
+    "name": "candidateCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "candidates",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "party",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "position",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "voteCount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [],
+    "name": "voterCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_party",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_position",
+        "type": "string"
+      }
+    ],
+    "name": "addCandidate",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "success",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "candidateId",
+        "type": "uint256"
+      }
+    ],
+    "name": "vote",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "success",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "candidateId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getCandidate",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "party",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "position",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "voteCount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "position",
+        "type": "string"
+      }
+    ],
+    "name": "hasVotedForPosition",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "result",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
+      }
+    ],
+    "name": "hasVoted",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "result",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  }
+];
 
 // MySQL database connection
 const db = mysql.createConnection({
@@ -352,45 +417,192 @@ queue.on('added', (job) => {
 
 
 // User sign-in endpoint
-app.post('/signin', (req, res) => {
-    const { voter_id, dob } = req.body;
+// app.post('/signin', (req, res) => {
+//     const { voter_id, dob } = req.body;
 
-    if (voter_id && dob) {
-        const query = `
-            SELECT 
-                name
-            FROM voter 
-            WHERE voter_id = ? AND dob = ?`;
+//     if (voter_id && dob) {
+//         const query = `
+//             SELECT 
+//                 name
+//             FROM voter 
+//             WHERE voter_id = ? AND dob = ?`;
 
-        db.query(query, [voter_id, dob], (error, results) => {
-            if (error) {
-                console.error('Database error:', error);
-                return res.status(500).json({ error: "Internal server error" });
-            }
+//         db.query(query, [voter_id, dob], (error, results) => {
+//             if (error) {
+//                 console.error('Database error:', error);
+//                 return res.status(500).json({ error: "Internal server error" });
+//             }
 
-            if (results.length > 0) {
-                const user = results[0];
-                return res.json({
-                    statusCode: 200,
-                    message: "Login successful",
-                    user: {
+//             if (results.length > 0) {
+//                 const user = results[0];
+//                 return res.json({
+//                     statusCode: 200,
+//                     message: "Login successful",
+//                     user: {
                        
-                        name: user.name,
-                    }
-                });
-            } else {
-                return res.status(401).send("Invalid Voter ID or Date of Birth");
-            }
-        });
-    } else {
-        return res.status(400).send("Please provide both Voter ID and Date of Birth");
-    }
+//                         name: user.name,
+//                     }
+//                 });
+//             } else {
+//                 return res.status(401).send("Invalid Voter ID or Date of Birth");
+//             }
+//         });
+//     } else {
+//         return res.status(400).send("Please provide both Voter ID and Date of Birth");
+//     }
+// });
+
+
+// app.post('/signin', (req, res) => {
+//     const { voter_id, dob } = req.body;
+
+//     if (voter_id && dob) {
+//         const query = `
+//             SELECT 
+//                 name, count 
+//             FROM voter 
+//             WHERE voter_id = ? AND dob = ?`;
+
+//         db.query(query, [voter_id, dob], (error, results) => {
+//             if (error) {
+//                 console.error('Database error:', error);
+//                 return res.status(500).json({ error: "Internal server error" });
+//             }
+
+//             if (results.length > 0) {
+//                 const user = results[0];
+
+//                 // Check if the voter has already voted
+//                 if (user.count === 1) {
+//                     return res.status(400).json({
+//                         message: "You have already voted."
+//                     });
+//                 }
+
+//                 // Update the count to 1 if the voter hasn't voted yet
+//                 const updateQuery = `
+//                     UPDATE voter 
+//                     SET count = 1 
+//                     WHERE voter_id = ?`;
+
+//                 db.query(updateQuery, [voter_id], (updateError) => {
+//                     if (updateError) {
+//                         console.error('Error updating count:', updateError);
+//                         return res.status(500).json({ error: "Internal server error" });
+//                     }
+
+//                     // Return success response
+//                     return res.json({
+//                         statusCode: 200,
+//                         message: "Login successful",
+//                         user: {
+//                             name: user.name,
+//                         }
+//                     });
+//                 });
+//             } else {
+//                 return res.status(401).send("Invalid Voter ID or Date of Birth");
+//             }
+//         });
+//     } else {
+//         return res.status(400).send("Please provide both Voter ID and Date of Birth");
+//     }
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.post('/signin', (req, res) => {
+  const { voter_id, dob } = req.body;
+
+  if (voter_id && dob) {
+      const query = `
+          SELECT 
+              name, count 
+          FROM voter 
+          WHERE voter_id = ? AND dob = ?`;
+
+      db.query(query, [voter_id, dob], (error, results) => {
+          if (error) {
+              console.error('Database error:', error);
+              return res.status(500).json({ error: "Internal server error" });
+          }
+
+          if (results.length > 0) {
+              const user = results[0];
+
+              // Check if the voter has already voted
+              if (user.count === 1) {
+                  return res.status(400).json({
+                      message: "You have already voted."
+                  });
+              }
+
+              // Update the count to 1 if the voter hasn't voted yet
+              const updateQuery = `
+                  UPDATE voter 
+                  SET count = 1 
+                  WHERE voter_id = ?`;
+
+              db.query(updateQuery, [voter_id], (updateError) => {
+                  if (updateError) {
+                      console.error('Error updating count:', updateError);
+                      return res.status(500).json({ error: "Internal server error" });
+                  }
+
+                  // Sign the JWT token
+                  const payload = { voter_id };
+                  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
+
+                  // Return success response with JWT token
+                  return res.json({
+                      statusCode: 200,
+                      message: "Login successful",
+                      user: {
+                          name: user.name,
+                      },
+                      token: token // Include JWT token in the response
+                  });
+              });
+          } else {
+              return res.status(401).send("Invalid Voter ID or Date of Birth");
+          }
+      });
+  } else {
+      return res.status(400).send("Please provide both Voter ID and Date of Birth");
+  }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // API add voter information
 app.post('/addVoterInfo', (req, res) => {
     const {
-        citizenship_no, name, dob, gender,nea_membership_no,voter_id, issued_date, issued_name, contact, email, document = null
+        citizenship_no, name, dob, gender,nea_membership_no,voter_id, issued_date, issued_name, contact, email
     } = req.body;
 
     const searchSql = 'SELECT * FROM voter WHERE email = ? OR voter_id = ? OR citizenship_no = ?';
@@ -405,11 +617,11 @@ app.post('/addVoterInfo', (req, res) => {
         } else {
             const insertSql = `
                 INSERT INTO voter (
-                    citizenship_no, name, dob, gender,nea_membership_no, voter_id, issued_date, issued_name, contact, email, document
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
+                    citizenship_no, name, dob, gender,nea_membership_no, voter_id, issued_date, issued_name, contact, email
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
             db.query(insertSql, [
-                citizenship_no, name, dob, gender, nea_membership_no,voter_id, issued_date, issued_name,  contact, email, document
+                citizenship_no, name, dob, gender, nea_membership_no,voter_id, issued_date, issued_name,  contact, email
             ], (error) => {
                 if (error) {
                     console.error('Insert error:', error);
@@ -431,9 +643,9 @@ app.post('/addVoterInfo', (req, res) => {
 // API add candidate information
 app.post('/addCandidateInfo', (req, res) => {
     const {
-       id, citizenship_no, name, dob, gender,nea_membership_no, voter_id,
+        id, citizenship_no, name, dob, gender, nea_membership_no, voter_id,
         authorizer_position, contact, email, candidate_id, party_name,
-        voting_date, start_time, ending_time, document = null
+        voting_date, start_time, ending_time
     } = req.body;
 
     const searchSql = 'SELECT * FROM candidate WHERE email = ? OR voter_id = ? OR candidate_id = ?';
@@ -444,31 +656,31 @@ app.post('/addCandidateInfo', (req, res) => {
         }
 
         if (results.length > 0) {
-            return res.status(409).send({ message: "Candidate already exists." });
-        } else {
-            const insertSql = `
-                INSERT INTO candidate (
-                   id, citizenship_no, name, dob, gender, nea_membership_no, voter_id,
-                    authorizer_position, contact, email, candidate_id, party_name, 
-                    voting_date, start_time, ending_time, document
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?)`;
-
-            db.query(insertSql, [
-               id, citizenship_no, name, dob, gender,nea_membership_no, voter_id,
-                authorizer_position, contact, email, candidate_id, party_name,
-                voting_date, start_time, ending_time, document
-            ], (error) => {
-                if (error) {
-                    console.error('Insert error:', error);
-                    return res.status(500).json({ error: "Failed to add candidate information" });
-                }
-
-                return res.json({
-                    statusCode: 200,
-                    message: "Candidate added successfully"
-                });
-            });
+            return res.status(409).json({ message: "Candidate already exists." });
         }
+
+        const insertSql = `
+            INSERT INTO candidate (
+                id, citizenship_no, name, dob, gender, nea_membership_no, voter_id,
+                authorizer_position, contact, email, candidate_id, party_name, 
+                voting_date, start_time, ending_time
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        db.query(insertSql, [
+            id, citizenship_no, name, dob, gender, nea_membership_no, voter_id,
+            authorizer_position, contact, email, candidate_id, party_name,
+            voting_date, start_time, ending_time
+        ], (error) => {
+            if (error) {
+                console.error('Insert error:', error);
+                return res.status(500).json({ error: "Failed to add candidate information" });
+            }
+
+            return res.json({
+                statusCode: 200,
+                message: "Candidate added successfully"
+            });
+        });
     });
 });
 
@@ -1035,12 +1247,7 @@ app.get('/voter/:voter_id', async (req, res) => {
         name: voter.name,
         dob: voter.dob,
         gender: voter.gender,
-        father_name: voter.father_name,
-        mother_name: voter.mother_name,
-        province: voter.province,
-        district: voter.district,
-        municipality: voter.municipality,
-        ward_no: voter.ward_no,
+        nea_membership_no:voter.nea_membership_no,
         issued_date: voter.issued_date,
         issued_name: voter.issued_name,
         authorizer_position: voter.authorizer_position,
@@ -1074,29 +1281,262 @@ app.get('/voter/:voter_id', async (req, res) => {
       const lineSpacing = 15;
   
       doc.text(`Voter ID: ${voter.voter_id}`, textStartX, textStartY + lineSpacing );
-      doc.text(`Email: ${voter.email}`, textStartX, textStartY + lineSpacing * 12);
+      doc.text(`Email: ${voter.email}`, textStartX, textStartY + lineSpacing * 7);
       doc.text(`Name: ${voter.name}`, textStartX, textStartY + lineSpacing *2);
-      doc.text(`Date of Birth: ${voter.dob}`, textStartX, textStartY + lineSpacing * 10);
-      doc.text(`Gender: ${voter.gender}`, textStartX, textStartY + lineSpacing * 3);
-      doc.text(`Father's Name: ${voter.father_name}`, textStartX, textStartY + lineSpacing * 4);
-      doc.text(`Mother's Name: ${voter.mother_name}`, textStartX, textStartY + lineSpacing * 5);
-      doc.text(`Province: ${voter.provience}`, textStartX, textStartY + lineSpacing * 6);
-      doc.text(`District: ${voter.district}`, textStartX, textStartY + lineSpacing * 7);
-      doc.text(`Municipality: ${voter.municipality}`, textStartX, textStartY + lineSpacing * 8);
-      doc.text(`Ward No: ${voter.ward_no}`, textStartX, textStartY + lineSpacing * 9);
-      doc.text(`Contact: ${voter.contact}`, textStartX, textStartY + lineSpacing * 11);
+      doc.text(`Date of Birth: ${voter.dob}`, textStartX, textStartY + lineSpacing * 5);
+      doc.text(`Gender: ${voter.gender}`, textStartX, textStartY + lineSpacing * 4);
+      doc.text(`nea_membership_no: ${voter.nea_membership_no}`, textStartX, textStartY + lineSpacing *3);
+      doc.text(`Contact: ${voter.contact}`, textStartX, textStartY + lineSpacing * 6);
   
      
       doc.image(qrCode, 150, 50, { fit: [80, 80] });
   
       
-      doc.fontSize(8).fillColor('#888').text('Authorized by Election Commission of Nepal,Nepal Engineering Association', 20, 250, { align: 'center' });
+      doc.fontSize(8).fillColor('#888').text('Authorized by Election Commission of Nepal,Nepal Engineering Association', 20, 180, { align: 'center' });
   
      
       doc.end();
     });
   });
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// yo duita contract address dynimically rakhna lai ho
+//   app.post('/api/contract', (req, res) => {
+//     const { contractAddress } = req.body;
+    
+//     const query = `INSERT INTO contract (contractAddress) VALUES (?) 
+//                    ON DUPLICATE KEY UPDATE contractAddress = ?`;
+  
+//     db.query(query, [contractAddress, contractAddress], (error, results) => {
+//       if (error) {
+//         res.status(500).send({ message: 'Error updating contract address', error });
+//       } else {
+//         res.status(200).send({ message: 'Contract address updated', data: results });
+//       }
+//     });
+//   });
+
+
+
+
+
+
+app.post('/api/contract', (req, res) => {
+    const { contractAddress, start_time, ending_time } = req.body;
+    
+    const query = `
+      INSERT INTO contract (contractAddress, start_time, ending_time) 
+      VALUES (?, ?, ?) 
+      ON DUPLICATE KEY UPDATE 
+        contractAddress = VALUES(contractAddress), 
+        start_time = VALUES(start_time), 
+        ending_time = VALUES(ending_time)`;
+
+    db.query(query, [contractAddress, start_time, ending_time], (error, results) => {
+      if (error) {
+        res.status(500).send({ message: 'Error updating contract address', error });
+      } else {
+        res.status(200).send({ message: 'Contract address and times updated', data: results });
+      }
+    });
+});
+
+  
+
+  app.get('/api/contract', (req, res) => {
+    const query = 'SELECT contractAddress FROM contract ORDER BY id DESC LIMIT 1';
+  
+    db.query(query, (error, results) => {
+      if (error) {
+        res.status(500).send({ message: 'Error fetching contract address', error });
+      } else {
+        const contractAddress = results[0]?.contractAddress || 'No address found';
+        res.status(200).send({ contractAddress });
+      }
+    });
+  });
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//search garna ko lagi banako api
+  app.get('/getVoterById/:voterId', (req, res) => {
+    const voterId = req.params.voterId;
+    db.query('SELECT * FROM voter WHERE voter_id = ?', [voterId], (error, results) => {
+        if (error) {
+            console.error('Database error:', error);
+            return res.status(500).json({ error: "Failed to fetch voter by ID" });
+        }
+
+        if (results.length > 0) {
+            res.json({
+                statusCode: 200,
+                message: "Voter Information Found",
+                info: results[0],
+            });
+        } else {
+            res.status(404).json({
+                statusCode: 404,
+                message: "Voter not found",
+            });
+        }
+    });
+});
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+app.post("/login", (req, res) => {
+    const { voter_id, dob } = req.body;
+  
+    // Query to find voter
+    const query = "SELECT * FROM voter WHERE voter_id = ? AND dob = ?";
+  
+    db.query(query, [voter_id, dob], (err, results) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+  
+      if (results.length > 0) {
+        const payload = { voter_id };
+  
+        // Sign the JWT token
+        const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
+  
+        // Return the token in the response
+        res.json({ token });
+      } else {
+        res.status(400).json({ message: "Invalid voter_id or date of birth" });
+      }
+    });
+  });
+
+
+
+
+
+
+  // app.post('/validate', (req, res) => {
+  //   const { token, voter_id } = req.body;
+  
+  //   console.log('Validation Request Received:', req.body);
+  
+  //   if (!token || !voter_id) {
+  //     return res.status(400).json({ message: 'Token and ID are required.' });
+  //   }
+  
+  //   try {
+  //     // Verify the JWT token
+  //     const decoded = jwt.verify(token, SECRET_KEY);
+  
+  //     if (decoded.voter_id === voter_id) {
+  //       return res.json({ message: 'Validation successful!' });
+  //     } else {
+  //       return res.status(401).json({ message: 'ID does not match the token.' });
+  //     }
+  //   } catch (err) {
+  //     return res.status(401).json({ message: 'Invalid token. Please login again.' });
+  //   }
+  // });
+  
+
+
+
+
+
+
+
+
+
+
+  app.post('/validate', (req, res) => {
+    const { voter_id } = req.body;  // Only the voter_id will be passed
+  
+    console.log('Validation Request Received:', req.body);
+  
+    if (!voter_id) {
+      return res.status(400).json({ message: 'Voter ID is required.' });
+    }
+  
+    // Retrieve token from Authorization header (Authorization: Bearer <token>)
+    const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Bearer header
+  
+    if (!token) {
+      return res.status(400).json({ message: 'Token is missing. Please log in again.' });
+    }
+  
+    try {
+      // Verify the JWT token
+      const decoded = jwt.verify(token, SECRET_KEY);
+  
+      // Validate that the voter_id in the token matches the provided voter_id
+      if (decoded.voter_id === voter_id) {
+        return res.json({ message: 'Validation successful!' });
+      } else {
+        return res.status(401).json({ message: 'Voter ID does not match the token.' });
+      }
+    } catch (err) {
+      return res.status(401).json({ message: 'Invalid token. Please log in again.' });
+    }
+  });
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
