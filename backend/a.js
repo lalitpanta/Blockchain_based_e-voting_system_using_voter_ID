@@ -12,6 +12,12 @@ const { exec } = require('child_process');
 
 
 
+
+
+
+
+
+
 const jwt = require("jsonwebtoken");
 
 
@@ -39,19 +45,9 @@ let currentSecond = Math.floor(Date.now()/1000);
 
 
 
-
-
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
-
-
-
-
-
-
-
-
 
 
 
@@ -84,6 +80,61 @@ useContractAddress();
 
 
 
+//photo ko lagi
+require("dotenv").config();
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = "uploads/";
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ["image/jpeg", "image/png"];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("❌ Only JPG and PNG files are allowed!"), false);
+  }
+};
+
+const upload = multer({ storage: storage, fileFilter: fileFilter });
+
+// Serve static files
+app.use("/uploads", express.static("uploads"));
+
+// Upload Single Image API and store as BLOB in voter table
+app.post("/upload/:voterId", upload.single("photo"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "❌ No file uploaded or invalid file type" });
+
+  const voterId = req.params.voterId;
+  const filePath = path.join(__dirname, req.file.path);
+
+  // Read the file as binary data
+  const fileData = fs.readFileSync(filePath);
+
+  // Update the voter table with the photo BLOB
+  const query = "UPDATE voter SET photo = ? WHERE voter_id = ?";
+  db.query(query, [fileData, voterId], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "❌ Voter not found" });
+    }
+
+    // Delete the file from the uploads folder after saving to the database
+    fs.unlinkSync(filePath);
+
+    res.json({
+      message: "✅ File uploaded successfully",
+    });
+  });
+});
 
 
 
@@ -91,7 +142,17 @@ useContractAddress();
 
 
 
-// const contractAddress = '0x7F46dfD6BF293D2347f9EfdaB16c5929B51f8394'; 
+
+
+
+
+
+
+
+
+
+
+
 const contractABI = [
   {
     "inputs": [],
@@ -313,10 +374,6 @@ const contract = new web3.eth.Contract(contractABI, contractAddress);
 
 
 
-
-
-
-
 // alert message dinxa blockchain sanga connect vako  xa ki nai vanera
 web3.eth.getBlockNumber()
     .then(blockNumber => console.log(`Connected to blockchain. Current block: ${blockNumber}`))
@@ -330,29 +387,7 @@ web3.eth.getBlockNumber()
 
 
 
-
-
-
-
-
-
-
-
-// yo chai contract address ko lagi
-    app.get('/api/contract-address', (req, res) => {
-        res.json({ contractAddress });
-    });
-
-
-
-
   
-
-
-
-
-
-
 
 
 //ishmirti
@@ -362,7 +397,6 @@ queue.process(async (job) => {
 
         console.log(`Processing vote for Candidate ID: ${candidateId}, Voter Account: ${voterAccount}`);
 
-        // Process the transaction on the blockchain
         await contract.methods.vote(candidateId).send({ from: voterAccount });
 
         // Fetch updated vote count from the blockchain
@@ -400,117 +434,6 @@ queue.on('added', (job) => {
 });
 
 //ishmirti
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// User sign-in endpoint
-// app.post('/signin', (req, res) => {
-//     const { voter_id, dob } = req.body;
-
-//     if (voter_id && dob) {
-//         const query = `
-//             SELECT 
-//                 name
-//             FROM voter 
-//             WHERE voter_id = ? AND dob = ?`;
-
-//         db.query(query, [voter_id, dob], (error, results) => {
-//             if (error) {
-//                 console.error('Database error:', error);
-//                 return res.status(500).json({ error: "Internal server error" });
-//             }
-
-//             if (results.length > 0) {
-//                 const user = results[0];
-//                 return res.json({
-//                     statusCode: 200,
-//                     message: "Login successful",
-//                     user: {
-                       
-//                         name: user.name,
-//                     }
-//                 });
-//             } else {
-//                 return res.status(401).send("Invalid Voter ID or Date of Birth");
-//             }
-//         });
-//     } else {
-//         return res.status(400).send("Please provide both Voter ID and Date of Birth");
-//     }
-// });
-
-
-// app.post('/signin', (req, res) => {
-//     const { voter_id, dob } = req.body;
-
-//     if (voter_id && dob) {
-//         const query = `
-//             SELECT 
-//                 name, count 
-//             FROM voter 
-//             WHERE voter_id = ? AND dob = ?`;
-
-//         db.query(query, [voter_id, dob], (error, results) => {
-//             if (error) {
-//                 console.error('Database error:', error);
-//                 return res.status(500).json({ error: "Internal server error" });
-//             }
-
-//             if (results.length > 0) {
-//                 const user = results[0];
-
-//                 // Check if the voter has already voted
-//                 if (user.count === 1) {
-//                     return res.status(400).json({
-//                         message: "You have already voted."
-//                     });
-//                 }
-
-//                 // Update the count to 1 if the voter hasn't voted yet
-//                 const updateQuery = `
-//                     UPDATE voter 
-//                     SET count = 1 
-//                     WHERE voter_id = ?`;
-
-//                 db.query(updateQuery, [voter_id], (updateError) => {
-//                     if (updateError) {
-//                         console.error('Error updating count:', updateError);
-//                         return res.status(500).json({ error: "Internal server error" });
-//                     }
-
-//                     // Return success response
-//                     return res.json({
-//                         statusCode: 200,
-//                         message: "Login successful",
-//                         user: {
-//                             name: user.name,
-//                         }
-//                     });
-//                 });
-//             } else {
-//                 return res.status(401).send("Invalid Voter ID or Date of Birth");
-//             }
-//         });
-//     } else {
-//         return res.status(400).send("Please provide both Voter ID and Date of Birth");
-//     }
-// });
-
-
-
 
 
 
@@ -591,14 +514,6 @@ app.post('/signin', (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
 // API add voter information
 app.post('/addVoterInfo', (req, res) => {
     const {
@@ -644,7 +559,7 @@ app.post('/addVoterInfo', (req, res) => {
 app.post('/addCandidateInfo', (req, res) => {
     const {
         id, citizenship_no, name, dob, gender, nea_membership_no, voter_id,
-        authorizer_position, contact, email, candidate_id, party_name,
+        position, contact, email, candidate_id, party,
         voting_date, start_time, ending_time
     } = req.body;
 
@@ -662,13 +577,13 @@ app.post('/addCandidateInfo', (req, res) => {
         const insertSql = `
             INSERT INTO candidate (
                 id, citizenship_no, name, dob, gender, nea_membership_no, voter_id,
-                authorizer_position, contact, email, candidate_id, party_name, 
+                position, contact, email, candidate_id, party, 
                 voting_date, start_time, ending_time
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         db.query(insertSql, [
             id, citizenship_no, name, dob, gender, nea_membership_no, voter_id,
-            authorizer_position, contact, email, candidate_id, party_name,
+            position, contact, email, candidate_id, party,
             voting_date, start_time, ending_time
         ], (error) => {
             if (error) {
@@ -683,8 +598,6 @@ app.post('/addCandidateInfo', (req, res) => {
         });
     });
 });
-
-
 
 
 
@@ -841,67 +754,7 @@ app.get('/candidate/:id', (req, res) => {
 
 
 
-// Admin login api
-// app.post('/adminlogin', (req, res) => {
-//     const { user_name, email, password, admin_no } = req.body;
-
-   
-//     if (user_name && email && password && admin_no != null && admin_no !== '') {
-//         const query = 'SELECT * FROM loginadmin WHERE user_name = ? AND email = ? AND password = ? AND admin_no = ?';
-//         db.query(query, [user_name, email, password, admin_no], (error, results) => {
-//             if (error) {
-//                 console.error('Database error:', error);
-//                 return res.status(500).json({ error: "Internal server error" });
-//             }
-
-//             if (results.length > 0) {
-//                 return res.json({
-//                     statusCode: 200,
-//                     message: "Login successful",
-//                     user: results[0]
-//                 });
-//             } else {
-//                 return res.status(401).json({
-//                     statusCode: 401,
-//                     message: "Invalid credentials"
-//                 });
-//             }
-//         });
-//     } else {
-//         return res.status(400).json({
-//             statusCode: 400,
-//             message: "Please provide all required fields"
-//         });
-//     }
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// admin login
 app.post('/adminlogin', (req, res) => {
     const { admin_no, user_name, email, password } = req.body;
 
@@ -946,102 +799,56 @@ app.post('/adminlogin', (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
+// candidates fetch garxa chain bata
 app.get('/fetchCandidates', async (req, res) => {
-    try {
-        const candidateCount = await contract.methods.candidateCount().call();
-        console.log(`Total candidates: ${candidateCount}`);
-
-
-        const deleteSql = 'DELETE FROM mycandidate';
-        db.query(deleteSql, (err) => {
-            if (err) {
-                console.error('Error deleting old candidates:', err.message);
-                return res.status(500).send('Error deleting old candidates');
-            }
-        });
-
+  try {
     
-        for (let i = 0; i < candidateCount; i++) {
-            const candidate = await contract.methods.candidates(i).call();
-            const { name, party, voteCount } = candidate;
-            const sql = `
-                INSERT INTO mycandidate (id, name, party, voteCount)
-                VALUES (?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE name = ?, party = ?, voteCount = ?`;
+      const contractResponse = await fetch('http://localhost:3000/api/contract');
+      const contractData = await contractResponse.json();
+      const contractAddress = contractData.contractAddress;
 
-            db.query(sql, [i, name, party, voteCount, name, party, voteCount], (err) => {
-                if (err) {
-                    console.error(`Error inserting candidate ${i}:`, err.message);
-                    return res.status(500).send('Error inserting candidates');
-                }
-            });
-        }
+      if (!contractAddress || contractAddress === 'No address found') {
+          return res.status(500).send('Contract address not found');
+      }
 
-        res.json({ message: 'Candidates fetched and stored successfully!' });
-    } catch (error) {
-        console.error('Error fetching candidates from the blockchain:', error.message);
-        res.status(500).send('Error fetching candidates');
-    }
+      
+      const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+      const candidateCount = await contract.methods.candidateCount().call();
+      console.log(`Total candidates: ${candidateCount}`);
+
+      
+      const deleteSql = 'DELETE FROM mycandidate';
+      db.query(deleteSql, (err) => {
+          if (err) {
+              console.error('Error deleting old candidates:', err.message);
+              return res.status(500).send('Error deleting old candidates');
+          }
+      });
+
+      for (let i = 0; i < candidateCount; i++) {
+          const candidate = await contract.methods.candidates(i).call();
+          const { name, party, position, voteCount } = candidate;
+
+          const sql = `
+              INSERT INTO mycandidate (id, name, party, position, voteCount)
+              VALUES (?, ?, ?, ?, ?)
+              ON DUPLICATE KEY UPDATE name = ?, party = ?, position = ?, voteCount = ?`;
+
+          db.query(sql, [i, name, party, position, voteCount, name, party, position, voteCount], (err) => {
+              if (err) {
+                  console.error(`Error inserting candidate ${i}:`, err.message);
+                  return res.status(500).send('Error inserting candidates');
+              }
+          });
+      }
+
+      res.json({ message: 'Candidates fetched and stored successfully!' });
+  } catch (error) {
+      console.error('Error fetching candidates from the blockchain:', error.message);
+      res.status(500).send('Error fetching candidates');
+  }
 });
-
-
-
-
-
-
-
-
-
-
-
-// api jo le vote count update garxa
-// app.post('/vote', async (req, res) => {
-//     const { candidateId } = req.body;
-
-//     if (candidateId === undefined) {
-//         return res.status(400).send('Candidate ID is required');
-//     }
-
-//     try {
-//         const accounts = await web3.eth.getAccounts();
-//         const voterAccount = accounts[0];
-
-       
-//         await contract.methods.vote(candidateId).send({ from: voterAccount });
-
-//         const updatedCandidate = await contract.methods.candidates(candidateId).call();
-//         const { voteCount } = updatedCandidate;
-
-//         const sql = 'UPDATE mycandidate SET voteCount = ? WHERE id = ?';
-//         db.query(sql, [voteCount, candidateId], (err, result) => {
-//             if (err) {
-//                 console.error('Error updating vote count in database:', err.message);
-//                 return res.status(500).send('Error updating vote count');
-//             }
-
-//             if (result.affectedRows === 0) {
-//                 return res.status(404).send('Candidate not found');
-//             }
-
-//             res.json({ message: 'Vote recorded successfully', voteCount });
-//         });
-//     } catch (error) {
-//         console.error('Error recording vote:', error.message);
-//         res.status(500).send('Error recording vote');
-//     }
-// });
-
-
-
 
 
 
@@ -1114,62 +921,6 @@ app.post('/vote', async (req, res) => {
 
 
 
-// API voter ko count 1 banaune 
-app.post('/check-voter', (req, res) => {
-    const { voter_id } = req.body;
-
-    if (!voter_id) {
-        return res.status(400).json({ status: 'error', message: 'Voter ID is required.' });
-    }
-
-    const query = 'SELECT count FROM voter WHERE voter_id = ?';
-
-    db.query(query, [voter_id], (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ status: 'error', message: 'Internal server error.' });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ status: 'error', message: 'Voter ID not found.' });
-        }
-
-        const { count } = results[0];
-        if (count === 0) {
-            const updateQuery = 'UPDATE voter SET count = 1 WHERE voter_id = ?';
-            db.query(updateQuery, [voter_id], (updateErr) => {
-                if (updateErr) {
-                    console.error('Error updating count:', updateErr);
-                    return res.status(500).json({ status: 'error', message: 'Failed to update count.' });
-                }
-            
-                res.json({ status: 'redirect', message: 'Redirecting to the next page.' });
-            });
-        } else {
-           
-            res.json({ status: 'error', message: 'You have already voted.' });
-        }
-    });
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1227,78 +978,74 @@ app.post('/send-email', (req, res) => {
 
 
 app.get('/voter/:voter_id', async (req, res) => {
-    const voterId = req.params.voter_id;
-  
-    const query = 'SELECT * FROM voter WHERE voter_id = ?';
-    db.execute(query, [voterId], async (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-  
-      if (results.length === 0) {
-        return res.status(404).json({ error: 'Voter not found' });
-      }
-  
-      const voter = results[0];
-  
-      //  QR Code generate hunxa with all details
-      const qrData = {
-        voter_id: voter.voter_id,
-        name: voter.name,
-        dob: voter.dob,
-        gender: voter.gender,
-        nea_membership_no:voter.nea_membership_no,
-        issued_date: voter.issued_date,
-        issued_name: voter.issued_name,
-        authorizer_position: voter.authorizer_position,
-        contact: voter.contact,
-        email: voter.email
-      };
-  
-      const qrCode = await QRCode.toDataURL(JSON.stringify(qrData));
-  
-     
-      const doc = new pdfkit({ size: [250, 400] }); // Standard card size
-      const filename = `voter-${voter.voter_id}.pdf`;
-  
-    
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-  
-     
-      doc.pipe(res);
-  
-  
-      doc.rect(0, 0, 250, 400).fill('#f0f4f8'); 
-      doc.rect(10, 10, 230, 380).stroke('#2d88ff').lineWidth(2); 
-  
-      doc.fontSize(16).font('Helvetica-Bold').fillColor('#2d88ff')
-        .text('Voter ID Card', 20, 20, { align: 'center' });
-  
-      doc.fontSize(10).fillColor('#000').font('Helvetica');
-      const textStartX = 20;
-      const textStartY = 50;
-      const lineSpacing = 15;
-  
-      doc.text(`Voter ID: ${voter.voter_id}`, textStartX, textStartY + lineSpacing );
-      doc.text(`Email: ${voter.email}`, textStartX, textStartY + lineSpacing * 7);
-      doc.text(`Name: ${voter.name}`, textStartX, textStartY + lineSpacing *2);
-      doc.text(`Date of Birth: ${voter.dob}`, textStartX, textStartY + lineSpacing * 5);
-      doc.text(`Gender: ${voter.gender}`, textStartX, textStartY + lineSpacing * 4);
-      doc.text(`nea_membership_no: ${voter.nea_membership_no}`, textStartX, textStartY + lineSpacing *3);
-      doc.text(`Contact: ${voter.contact}`, textStartX, textStartY + lineSpacing * 6);
-  
-     
-      doc.image(qrCode, 150, 50, { fit: [80, 80] });
-  
-      
-      doc.fontSize(8).fillColor('#888').text('Authorized by Election Commission of Nepal,Nepal Engineering Association', 20, 180, { align: 'center' });
-  
-     
-      doc.end();
-    });
+  const voterId = req.params.voter_id;
+
+  const query = 'SELECT * FROM voter WHERE voter_id = ?';
+  db.execute(query, [voterId], async (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Voter not found' });
+    }
+
+    const voter = results[0];
+
+    // Generate QR Code with voter details
+    const qrData = {
+      voter_id: voter.voter_id,
+      name: voter.name,
+      dob: voter.dob,
+      gender: voter.gender,
+      nea_membership_no: voter.nea_membership_no,
+      issued_date: voter.issued_date,
+      issued_name: voter.issued_name,
+      authorizer_position: voter.authorizer_position,
+      contact: voter.contact,
+      email: voter.email
+    };
+
+    const qrCode = await QRCode.toDataURL(JSON.stringify(qrData));
+
+    const doc = new pdfkit({ size: [250, 400] });
+    const filename = `voter-${voter.voter_id}.pdf`;
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+
+    doc.pipe(res);
+    doc.rect(0, 0, 250, 400).fill('#f0f4f8');
+    doc.rect(10, 10, 230, 380).stroke('#2d88ff').lineWidth(2);
+    doc.fontSize(16).font('Helvetica-Bold').fillColor('#2d88ff').text('Voter ID Card', 20, 20, { align: 'center' });
+
+    doc.fontSize(10).fillColor('#000').font('Helvetica');
+    const textStartX = 20;
+    const textStartY = 50;
+    const lineSpacing = 15;
+
+    doc.text(`Voter ID: ${voter.voter_id}`, textStartX, textStartY + lineSpacing);
+    doc.text(`Name: ${voter.name}`, textStartX, textStartY + lineSpacing * 2);
+    doc.text(`NEA Membership No: ${voter.nea_membership_no}`, textStartX, textStartY + lineSpacing * 3);
+    doc.text(`Gender: ${voter.gender}`, textStartX, textStartY + lineSpacing * 4);
+    doc.text(`Date of Birth: ${voter.dob}`, textStartX, textStartY + lineSpacing * 5);
+    doc.text(`Contact: ${voter.contact}`, textStartX, textStartY + lineSpacing * 6);
+    doc.text(`Email: ${voter.email}`, textStartX, textStartY + lineSpacing * 7);
+
+    // Add voter photo (assuming base64 stored in database)
+    if (voter.photo) {
+      const photoBuffer = Buffer.from(voter.photo, 'base64');
+      doc.image(photoBuffer, 160, 50, { fit: [80, 80] });
+    }
+
+    // Add QR Code
+    doc.image(qrCode, 80, 180, { fit: [80, 80] });
+
+    doc.fontSize(8).fillColor('#888').text('Authorized by Election Commission of Nepal', 20, 265, { align: 'center' });
+
+    doc.end();
   });
-  
+});
 
 
 
@@ -1309,36 +1056,7 @@ app.get('/voter/:voter_id', async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-// yo duita contract address dynimically rakhna lai ho
-//   app.post('/api/contract', (req, res) => {
-//     const { contractAddress } = req.body;
-    
-//     const query = `INSERT INTO contract (contractAddress) VALUES (?) 
-//                    ON DUPLICATE KEY UPDATE contractAddress = ?`;
-  
-//     db.query(query, [contractAddress, contractAddress], (error, results) => {
-//       if (error) {
-//         res.status(500).send({ message: 'Error updating contract address', error });
-//       } else {
-//         res.status(200).send({ message: 'Contract address updated', data: results });
-//       }
-//     });
-//   });
-
-
-
-
-
-
+// address database ma pathauxa
 app.post('/api/contract', (req, res) => {
     const { contractAddress, start_time, ending_time } = req.body;
     
@@ -1360,7 +1078,7 @@ app.post('/api/contract', (req, res) => {
 });
 
   
-
+// contract address fetch garxa database bata
   app.get('/api/contract', (req, res) => {
     const query = 'SELECT contractAddress FROM contract ORDER BY id DESC LIMIT 1';
   
@@ -1382,16 +1100,7 @@ app.post('/api/contract', (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-//search garna ko lagi banako api
+//search engine for voter ko 
   app.get('/getVoterById/:voterId', (req, res) => {
     const voterId = req.params.voterId;
     db.query('SELECT * FROM voter WHERE voter_id = ?', [voterId], (error, results) => {
@@ -1417,72 +1126,35 @@ app.post('/api/contract', (req, res) => {
 
 
 
-  
 
 
+// search engine for candidate
+app.get('/getCandidateByNeaMembershipNo/:neaMembershipNo', (req, res) => {
+  const neaMembershipNo = req.params.neaMembershipNo;
 
-
-
-
-
-
-
-
-
-app.post("/login", (req, res) => {
-    const { voter_id, dob } = req.body;
-  
-    // Query to find voter
-    const query = "SELECT * FROM voter WHERE voter_id = ? AND dob = ?";
-  
-    db.query(query, [voter_id, dob], (err, results) => {
-      if (err) {
-        console.error("Error executing query:", err);
-        return res.status(500).json({ message: "Internal server error" });
+  // Query the database to find the candidate by nea_membership_no
+  db.query('SELECT * FROM candidate WHERE nea_membership_no = ?', [neaMembershipNo], (error, results) => {
+      if (error) {
+          console.error('Database error:', error);
+          return res.status(500).json({ error: "Failed to fetch candidate by NEA Membership No" });
       }
-  
+
       if (results.length > 0) {
-        const payload = { voter_id };
-  
-        // Sign the JWT token
-        const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
-  
-        // Return the token in the response
-        res.json({ token });
+          // Candidate found, return the candidate information
+          res.json({
+              statusCode: 200,
+              message: "Candidate Information Found",
+              info: results[0],
+          });
       } else {
-        res.status(400).json({ message: "Invalid voter_id or date of birth" });
+          // Candidate not found
+          res.status(404).json({
+              statusCode: 404,
+              message: "Candidate not found",
+          });
       }
-    });
   });
-
-
-
-
-
-
-  // app.post('/validate', (req, res) => {
-  //   const { token, voter_id } = req.body;
-  
-  //   console.log('Validation Request Received:', req.body);
-  
-  //   if (!token || !voter_id) {
-  //     return res.status(400).json({ message: 'Token and ID are required.' });
-  //   }
-  
-  //   try {
-  //     // Verify the JWT token
-  //     const decoded = jwt.verify(token, SECRET_KEY);
-  
-  //     if (decoded.voter_id === voter_id) {
-  //       return res.json({ message: 'Validation successful!' });
-  //     } else {
-  //       return res.status(401).json({ message: 'ID does not match the token.' });
-  //     }
-  //   } catch (err) {
-  //     return res.status(401).json({ message: 'Invalid token. Please login again.' });
-  //   }
-  // });
-  
+});
 
 
 
@@ -1493,8 +1165,11 @@ app.post("/login", (req, res) => {
 
 
 
+
+
+//jwt voterId ra jwt token validate gaexa
   app.post('/validate', (req, res) => {
-    const { voter_id } = req.body;  // Only the voter_id will be passed
+    const { voter_id } = req.body;  
   
     console.log('Validation Request Received:', req.body);
   
@@ -1502,18 +1177,18 @@ app.post("/login", (req, res) => {
       return res.status(400).json({ message: 'Voter ID is required.' });
     }
   
-    // Retrieve token from Authorization header (Authorization: Bearer <token>)
-    const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Bearer header
+  
+    const token = req.headers['authorization']?.split(' ')[1]; // token from Bearer header bata extract garxa
   
     if (!token) {
       return res.status(400).json({ message: 'Token is missing. Please log in again.' });
     }
   
     try {
-      // Verify the JWT token
+      
       const decoded = jwt.verify(token, SECRET_KEY);
   
-      // Validate that the voter_id in the token matches the provided voter_id
+      
       if (decoded.voter_id === voter_id) {
         return res.json({ message: 'Validation successful!' });
       } else {
@@ -1529,16 +1204,102 @@ app.post("/login", (req, res) => {
 
 
 
+//candidate validate garna database ma vako candidate matra blockchain ma janxa
+  app.post('/validateCandidate', (req, res) => {
+    const { name, party, position } = req.body;
+  
+    if (!name || !party || !position) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'All fields are required.'
+      });
+    }
+  
+   
+    const query = `
+      SELECT * FROM candidate WHERE name = ? AND party = ? AND position = ?
+    `;
+    db.query(query, [name, party, position], (error, results) => {
+      if (error) {
+        console.error('Database error:', error);
+        return res.status(500).json({
+          status: 'error',
+          message: 'Database error'
+        });
+      }
+  
+     
+      if (results.length > 0) {
+        return res.status(200).json({
+          status: 'success',
+          message: 'Candidate information is valid.',
+          isValid: true
+        });
+      }
+  
+     
+      return res.status(404).json({
+        status: 'error',
+        message: 'Candidate does not exist.',
+        isValid: false
+      });
+    });
+  });
+  
 
 
 
 
 
 
+// face recongation
+app.use(express.static(path.join(__dirname, '../face_recongation/face_recognition_using_Opencv/public')));
+
+// API endpoint to capture an image
+app.post('/capture-image', (req, res) => {
+    // Execute the main.py script to capture an image
+    exec('python ../face_recongation/face_recognition_using_Opencv/main.py capture', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error capturing image: ${error.message}`);
+            console.error(`STDERR: ${stderr}`);
+            return res.status(500).json({ error: 'Error capturing image.' });
+        }
+
+        if (stderr) {
+            console.error(`STDERR: ${stderr}`);
+        }
+
+        console.log(`Image captured: ${stdout}`);
+        res.json({ message: 'Image captured successfully!' });
+    });
+});
 
 
 
+// API endpoint to run the face recognition program
+app.post('/run-face-recognition', (req, res) => {
+    // Execute the main.py script to run face recognition
+    exec('python ../face_recongation/face_recognition_using_Opencv/main.py recognize', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error executing Python script: ${error.message}`);
+            console.error(`STDERR: ${stderr}`);
+            return res.status(500).json({ error: 'Error running face recognition.' });
+        }
 
+        if (stderr) {
+            console.error(`STDERR: ${stderr}`);
+        }
+
+        console.log(`Python script output: ${stdout}`);
+        try {
+            const data = JSON.parse(stdout); 
+            res.json(data); 
+        } catch (parseError) {
+            console.error(`Error parsing JSON: ${parseError.message}`);
+            res.status(500).json({ error: 'Error parsing Python script output.' });
+        }
+    });
+});
 
 
 app.listen(port, () => {
