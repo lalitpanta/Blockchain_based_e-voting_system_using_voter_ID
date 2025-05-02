@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Photo Upload & Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            background: blue;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: darkblue;
+        }
+        #loading {
+            display: none;
+            font-weight: bold;
+            color: blue;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 10px;
+        }
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Upload a Single Photo</h2>
+        <input type="file" id="imageInput" accept="image/jpeg, image/png">
+        <button onclick="uploadImage()">Upload</button>
+        <p id="loading">Uploading...</p>
+
+        <div id="preview" style="display: none;">
+            <h3>Last Uploaded Image:</h3>
+            <div id="uploadedImage"></div>
+        </div>
+
+        <h2>Gallery</h2>
+        <div id="gallery"></div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:3000"; // Updated API URL to localhost:3000
+
+        async function uploadImage() {
+            const fileInput = document.getElementById("imageInput");
+            if (!fileInput.files.length) {
+                alert("❌ Please select an image!");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            if (!file.type.match("image/jpeg") && !file.type.match("image/png")) {
+                alert("❌ Only JPG and PNG formats are allowed!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("photo", file);
+
+            document.getElementById("loading").style.display = "block";
+
+            try {
+                const response = await fetch(`${API_URL}/upload`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const data = await response.json();
+                document.getElementById("loading").style.display = "none";
+
+                if (data.fileUrl) {
+                    document.getElementById("uploadedImage").innerHTML = `<img src="${data.fileUrl}" alt="Uploaded Photo">`;
+                    document.getElementById("preview").style.display = "block";
+                    loadGallery();
+                } else {
+                    alert("❌ Error uploading image");
+                }
+            } catch (error) {
+                console.error("Upload error:", error);
+                document.getElementById("loading").style.display = "none";
+                alert("❌ Failed to upload image");
+            }
+        }
+
+        async function loadGallery() {
+            try {
+                const response = await fetch(`${API_URL}/photos`);
+                const photos = await response.json();
+                const gallery = document.getElementById("gallery");
+                gallery.innerHTML = "";
+
+                photos.forEach(photo => {
+                    const img = document.createElement("img");
+                    img.src = photo.photo;
+                    img.alt = "Uploaded Photo";
+                    gallery.appendChild(img);
+                });
+            } catch (error) {
+                console.error("Error loading gallery:", error);
+            }
+        }
+
+        window.onload = loadGallery;
+    </script>
+
+</body>
+</html>

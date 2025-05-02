@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #bcccdc;
+            background-image: url(/public/bkj1.jpg);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #007BFF, #4CAF50);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+            border-radius: 40px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .header-message {
+            background-color: #2a2a27;
+            color: #FFEB3B;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            border-radius: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: -30px auto 0;
+            background: rgb(217, 225, 204);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #78aee7;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-box input {
+            padding: 10px;
+            font-size: 16px;
+            width: 70%;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .search-box button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-box button:hover {
+            background-color: #45a049;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #a6ff00;
+            border-radius: 10px;
+            background-color: #30f364;
+        }
+
+        .profile-photo {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+            border: 3px solid #007BFF;
+        }
+
+        .profile-info {
+            flex-grow: 1;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .info-card {
+            background: #e6ee7f;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            color: #007BFF;
+        }
+
+        .info-card p {
+            margin: 5px 0;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .next-button {
+            background-color: #28a745;
+            margin-top: 30px;
+        }
+
+        .next-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Welcome to Your Profile</h2>
+        <div class="header-message">
+            Please review your personal details carefully. If any information is incorrect, please contact our office for assistance.
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="voter_id_input" placeholder="Enter Voter ID">
+            <button onclick="searchProfile()">Search</button>
+        </div>
+
+        <h1>Profile Information</h1>
+        <div class="profile-header" style="display: none;">
+            <img src="https://via.placeholder.com/100" alt="Profile Photo" class="profile-photo">
+            <div class="profile-info">
+                <h2 id="name"></h2>
+                <p><strong>Email:</strong> <span id="email"></span></p>
+                <p><strong>Phone:</strong> <span id="contact"></span></p>
+            </div>
+        </div>
+
+        <div class="info-card" style="display: none;">
+            <h3>Personal Information</h3>
+            <p><strong>Citizenship Number:</strong> <span id="citizenship_no"></span></p>
+            <p><strong>Date of Birth:</strong> <span id="dob"></span></p>
+            <p><strong>Gender:</strong> <span id="gender"></span></p>
+            <p><strong>NEA Membership No:</strong> <span id="nea_membership_no"></span></p>
+        </div>
+
+        <div class="info-card" style="display: none;">
+            <h3>Voter Information</h3>
+            <p><strong>Voter ID Number:</strong> <span id="voter_id"></span></p>
+            <p><strong>Voter ID Issued Date:</strong> <span id="issued_date"></span></p>
+            <p><strong>Voter ID Issued By:</strong> <span id="issued_name"></span></p>
+            <p><strong>Authorizer's Position:</strong> <span id="authorizer_position"></span></p>
+        </div>
+
+        <a href="/client/public/voter_dshboard.html" class="button next-button">Next</a>
+    </div>
+
+    <script>
+        function searchProfile() {
+            const voterId = document.getElementById('voter_id_input').value;
+            if (!voterId) {
+                alert('Please enter a Voter ID.');
+                return;
+            }
+
+            // Fetch profile data from the server using the API
+            fetch(`http://localhost:3000/findfrofile`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ voter_id: voterId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.statusCode === 200) {
+                    const user = data.user;
+
+                    document.getElementById('name').textContent = user.name;
+                    document.getElementById('email').textContent = user.email;
+                    document.getElementById('contact').textContent = user.contact;
+                    document.getElementById('citizenship_no').textContent = user.citizenship_no;
+                    document.getElementById('dob').textContent = user.dob;
+                    document.getElementById('gender').textContent = user.gender;
+                    document.getElementById('nea_membership_no').textContent = user.nea_membership_no;
+                    document.getElementById('voter_id').textContent = user.voter_id;
+                    document.getElementById('issued_date').textContent = user.issued_date;
+                    document.getElementById('issued_name').textContent = user.issued_name;
+                    document.getElementById('authorizer_position').textContent = user.authorizer_position;
+
+                    // Show the profile info
+                    document.querySelector('.profile-header').style.display = 'flex';
+                    document.querySelector('.info-card').style.display = 'block';
+                } else {
+                    alert('Voter ID not found.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching profile:', error);
+                alert('An error occurred while fetching the profile.');
+            });
+        }
+    </script>
+
+</body>
+</html>

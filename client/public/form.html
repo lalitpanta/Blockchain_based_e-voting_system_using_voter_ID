@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Registration</title>
+    <link rel="stylesheet" href="/client/style/form.css">
+    <script src="/client/src/addvoter_app.js"></script>
+</head>
+
+
+<body>
+    <div class="containeer">
+        <header>Voter Registration</header>
+        <form method="post" id="voterForm">
+            <div class="form first">
+                <div class="details_personal">
+                    <span class="title">Personal Details</span>
+
+                    <div class="fields">
+
+                        <div class="input-field">
+                            <label for="citizenship_no"><b>CITIZENSHIP NUMBER</b></label>
+                            <input 
+                                type="text" id="citizenship_no" name="citizenship_no" placeholder="Citizenship No. (e.g., 12-00-12-00123)" required>
+                            <div id="citizenshipError" class="error-message" style="display: none;">
+                                Citizenship number must follow the format: XX-XX-XX-XXXXX (e.g., 12-00-12-00123)
+                            </div>
+                        </div>
+
+                        <div class="input-field">
+                            <label><b>FULL NAME</b></label>
+                            <input type="text" name="name" placeholder="Full Name (e.g., Ram Prashad)" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label><b>DATE OF BIRTH</b></label>
+                            <input type="date" name="dob" id="dob" placeholder="Date Of Birth" required>
+                            <div id="dobError" class="error-message" style="color: red; display: none;">You must be at least 18 years old.</div>
+                        </div>
+
+                        <div class="input-field">
+                            <label for="gender"><b>GENDER</b></label>
+                            <select name="gender" id="gender" required>
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        
+
+                        <div class="input-field">
+                            <label><b>NEA MEMBERSHIP NUMBER</b></label>
+                            <input type="text" id="nea_membership_no" name="nea_membership_no" placeholder="Membership Number" required>
+                            <div id="nea_Error" class="error-message" style="display: none; color: red;">
+                                NEA Membership Number must be exactly 6 digits
+                            </div>
+                        </div>
+
+                        
+                            <div class="input-field">
+                                <label><b>VOTER ID NUMBER</b></label>
+                                <input type="number" name="voter_id" id="voter_id" placeholder="Enter Voter ID (6 digits only)" required>
+                                <div id="voterIdError" class="error-message" style="display: none;">Voter ID must be exactly 6 digits</div>
+                            </div>
+
+                        <div class="input-field">
+                            <label><b>VOTER ID ISSUED DATE</b></label>
+                            <input type="date" name="issued_date" id="issued_date" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label><b>VOTER ID ISSUED BY</b></label>
+                            <input type="text" name="issued_name" placeholder="Authorized Person's Full Name" required>                           
+                        </div>
+    
+                        <div class="input-field">
+                            <label><b>AUTHORIZER'S POSITION</b></label>
+                            <input type="text" name="authorizer_position" placeholder="Position (e.g., Chief Election Officer)" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label><b>CONTACT</b></label>
+                            <input type="number" name="contact" id="contact" placeholder="Phone Number (e.g., +977-98XXXXXXXX)" required>
+                            <div id="contactError" class="error-message">Invalid contact number</div>
+                        </div>
+
+                        <div class="input-field">
+                            <label><b>EMAIL</b></label>
+                            <input type="email" name="email" id="email" placeholder="Email Address (e.g., example@mail.com)" required>
+                            <div id="emailError" class="error-message">Invalid email address</div>
+                        </div>
+                        <div class="input-field">
+                            <label><b>Upload Current Photo</b></label>
+                            <br>
+                            <input type="file" id="citizenshipPhoto" accept=".jpg, .jpeg, .png" required>
+                            <br>
+                            <button onclick="uploadCitizenship()">Submit</button>
+                            <br>
+                            <div id="upload-message" style="color: red;"></div>
+                        </div>
+                        
+             
+   
+                       <!-- <div class="buttons">
+                           <button type="submit" class="nextBtn">
+                               <span class="btntext">Submit</span>
+                           </button>
+                       </div> -->
+                   </div>
+                </div>
+            </div>
+        </form>
+        <div id="message" style="color: red; margin-top: 10px;"></div>
+
+    </div>
+   
+
+
+
+
+
+     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+     <script>
+       function uploadCitizenship() {
+         const fileInput = document.getElementById("citizenshipPhoto");
+         const voterIdInput = document.getElementById("voter_id");
+         const uploadMessage = document.getElementById("upload-message");
+     
+         // Retrieve voter ID from the form
+         const voterId = voterIdInput.value.trim();
+     
+         if (!fileInput.files.length) {
+           uploadMessage.textContent = "❌ Please select a file.";
+           uploadMessage.style.color = "red";
+           return;
+         }
+     
+         if (!voterId) {
+           uploadMessage.textContent = "❌ Voter ID is missing. Please fill the form correctly.";
+           uploadMessage.style.color = "red";
+           return;
+         }
+     
+         const file = fileInput.files[0];
+     
+         // Validate file size (max 1MB)
+         if (file.size > 1024 * 1024) {
+           uploadMessage.textContent = "❌ File size must be less than 1MB.";
+           uploadMessage.style.color = "red";
+           return;
+         }
+     
+         // Validate file type
+         const allowedTypes = ["image/jpeg", "image/png"];
+         if (!allowedTypes.includes(file.type)) {
+           uploadMessage.textContent = "❌ Invalid file type. Only JPG and PNG are allowed.";
+           uploadMessage.style.color = "red";
+           return;
+         }
+     
+         const formData = new FormData();
+         formData.append("photo", file);
+     
+         // Send request to backend with voter ID
+         axios.post(`http://localhost:3000/upload/${voterId}`, formData, {
+           headers: { "Content-Type": "multipart/form-data" },
+         })
+         .then((response) => {
+           uploadMessage.textContent = "✅ File uploaded successfully!";
+           uploadMessage.style.color = "green";
+         })
+         .catch((error) => {
+           uploadMessage.textContent = error.response?.data?.error || "❌ Upload failed.";
+           uploadMessage.style.color = "red";
+         });
+       }
+     </script> 
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

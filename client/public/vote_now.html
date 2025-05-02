@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voter Check</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f9;
+    }
+
+    .iframe-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .search-box {
+      width: 300px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .search-box input {
+      width: calc(100% - 22px);
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    .search-box button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .search-box button:hover {
+      background-color: #218838;
+    }
+
+    .message-box {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      text-align: center;
+      z-index: 1000;
+    }
+
+    .message-box p {
+      margin: 0;
+      color: #333;
+    }
+
+    .message-box button {
+      margin-top: 15px;
+      padding: 10px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .message-box button:hover {
+      background-color: #0056b3;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+<div class="iframe-container">
+  <div class="search-box">
+    <h2>Check Your Vote</h2>
+    <input type="text" id="voter_id" placeholder="Enter Voter ID" required>
+    <button id="submitBtn">Submit</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="message-box" id="messageBox">
+  <p id="messageText"></p>
+  <button id="closeBtn">Close</button>
+</div>
+
+<script>
+  document.getElementById('submitBtn').addEventListener('click', async function() {
+    const voterId = document.getElementById('voter_id').value;
+
+    if (!voterId) {
+      showMessage('Please enter a valid Voter ID.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/check-voter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ voter_id: voterId })
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'redirect') {
+        window.location.href = '/public/Vote_candidate.html';
+      } else if (result.status === 'error') {
+        showMessage(result.message);
+      }
+    } catch (error) {
+      showMessage('An error occurred. Please try again later.');
+    }
+  });
+
+  document.getElementById('closeBtn').addEventListener('click', function() {
+    hideMessage();
+  });
+
+  function showMessage(message) {
+    document.getElementById('messageText').innerText = message;
+    document.getElementById('messageBox').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+  }
+
+  function hideMessage() {
+    document.getElementById('messageBox').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'poppins',sans-serif;
+}
+
+.containeer{
+    position: relative;
+    max-width: 900px;
+    align-items: center;
+    width: 400px;
+    border-radius: 6px;
+    padding: 30px;
+    margin: 0 15px;
+    background-color:#a18888;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+.containeer header{
+    position: relative;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+
+.containeer header::before{
+content: "";
+position: absolute;
+left: 0;
+bottom: -2px;
+height: 3px;
+width: 27px;
+background-color: #4070f4;
+border-radius: 12px;
+}
+.containeer form{
+    position: relative;
+    min-height: 490px;
+    background-color: #706969;
+}
+
+.containeer form .form{
+    position: relative;
+    background-color: #5e5555;
+}
+
+
+
+
+
+
+
+
+
+
+.containeer form .title {
+    display: block;
+    margin-bottom: 8px; 
+    font-size: 16px;
+    font-weight: 500;
+    margin: 6px 0;
+    color: #333;
+}
+
+.containeer form .fields{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+form .fields .input-field{
+   display: flex;
+   width: calc(100%/3 - 15px);
+   flex-direction: column;
+   margin: 4px 0;
+}
+.input-field label{
+    font-size: 12px;
+    font-weight: 500;
+    color: #2e2e2e;
+}
+.input-field input{
+    padding: 0 15px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #333;
+    outline: none;
+    height: 42px;
+    margin: 8px 0;
+}
+
+.input-field input:is(:focus,valid){
+    box-shadow: 0 3px 6px rgba(0,0,0,0.13);
+}
+
+.input-field input[type="date"]{
+    color: #333;
+
+}
+
+.containeer form button, .backBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: 5px;
+    height: 45px;
+    border: none;
+    outline:none;
+    color: #fff;
+    margin: 25px 0;
+    max-width: 200px;
+    background-color: #4070f4;
+    transition: all 0.3s linear;
+    cursor: pointer;
+}
+
+.containeer form button
+.containeer form button .backBtn{
+    font-size: 14px;
+    font-weight: 400;
+}
+
+form button:hover{
+    background-color:#b2d3b6;
+}
+
+
+
+
+form .buttons{
+   display: flex;
+   align-items: center;
+
+}
+form .buttons button,
+ .backBtn{
+    margin-right: 140px;
+    padding: 15px 40px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.containeer{
+    position: relative;
+    max-width: 900px;
+    align-items: center;
+    width: 100%;
+    border-radius: 6px;
+    padding: 30px;
+    margin:0 18% 18%;
+    background-color:#fef8f8;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+.containeer header{
+    position: relative;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+
+.containeer header::before{
+content: "";
+position: absolute;
+left: 0;
+bottom: -2px;
+height: 3px;
+width: 27px;
+background-color: #4070f4;
+border-radius: 12px;
+}
+.containeer form{
+    position: relative;
+    min-height: 490px;
+    background-color: #fff;
+}
+
+.containeer form .form{
+    position: relative;
+    background-color: #fff;
+}
+.containeer form .title {
+    display: block;
+    margin-bottom: 8px; 
+    font-size: 16px;
+    font-weight: 500;
+    margin: 6px 0;
+    color: #333;
+}
+
+.containeer form .fields{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+form .fields .input-field{
+   display: flex;
+   width: calc(100%/3 - 15px);
+   flex-direction: column;
+   margin: 4px 0;
+}
+.input-field label{
+    font-size: 12px;
+    font-weight: 500;
+    color: #2e2e2e;
+}
+.input-field input{
+    padding: 0 15px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #333;
+    outline: none;
+    height: 42px;
+    margin: 8px 0;
+}
+
+.input-field input:is(:focus,valid){
+    box-shadow: 0 3px 6px rgba(0,0,0,0.13);
+}
+
+.input-field input[type="date"]{
+    color: #333;
+
+}
+
+.containeer form button, .nextBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: 5px;
+    height: 45px;
+    border: none;
+    outline:none;
+    color: #fff;
+    margin:25px 0;
+    max-width: 200px;
+    background-color: #4070f4;
+    transition: all 0.3s linear;
+    cursor: pointer;
+}
+
+.containeer form button
+.containeer form button .nextBtn{
+    font-size: 14px;
+    font-weight: 400;
+}
+
+form button:hover{
+    background-color:#265df2;
+}
+
+
+form .buttons{
+   display: flex;
+   align-items: center;
+
+}

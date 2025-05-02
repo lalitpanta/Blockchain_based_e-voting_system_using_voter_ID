@@ -1,0 +1,563 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fffffefd;
+    /* background: url(/public/ab.jpg); */
+    overflow: auto;
+} 
+  
+
+
+
+header {
+    background-color: #6c9fbb;
+    color: #0c0909;
+    padding: 10px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+
+
+nav button {
+    margin-right: 20px;
+    font-weight: bold;
+    transition: color 0.3s;
+    background-color: #020202;
+    padding: 10px;
+    color: #fdfdfd;
+    
+    cursor: pointer;
+    margin-left: 10px;
+    height: 120px;
+    width: 150px;
+   border-top-right-radius: 20px;
+   border-bottom-left-radius: 20px;
+}
+
+/* #logout {
+    
+    margin-right: 5px;
+    font-weight: bold;
+    transition: color 0.3s;
+    background-color: #020202;
+    padding: 10px;
+    color: #fdfdfd;
+    
+    cursor: pointer;
+   
+    height: 40px;
+    width: 100px;
+   border-top-right-radius: 20px;
+   border-bottom-left-radius: 20px;
+   
+} */
+
+
+
+
+
+
+#logout {
+    position: absolute;  /* Make it position relative to the nearest positioned ancestor (usually the body) */
+    top: 10px;
+    right: 10px; 
+    
+    margin-right: 5px;
+    font-weight: bold;
+    transition: color 0.3s;
+    background-color: #ff0000;
+    padding: 10px;
+    color: #fdfdfd;
+    
+    cursor: pointer;
+    
+    height: 40px;
+    width: 100px;
+   border-radius: 10px;
+    
+}
+
+
+
+
+
+
+
+#hamburger {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+
+
+
+
+#hamburger div {
+    width: 35px;
+    height: 4px;
+    background-color: rgb(0, 0, 0);
+    margin: 6px 0;
+}
+
+
+
+
+
+
+
+
+nav {
+    display: none; 
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 120vh;
+    background-color: #c31820;
+    border-top-right-radius: 100px;
+   
+    padding-top: 100px;
+    transform-origin: top left; 
+    transform: scaleY(0);
+    opacity: 0; 
+    transition: transform 0.3s ease-in-out, opacity 0.5s ease-in-out; 
+}
+
+
+nav.show {
+    display: flex;
+    transform: scaleY(1); 
+    opacity: 1; 
+}
+
+
+
+
+
+
+
+
+#navLogo{
+
+    border-radius: 50px;
+    margin-left: 20px;
+    
+}
+
+
+
+
+
+nav button:hover {
+    background-color: #18405b8f;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#myform {
+    display: flex;
+    align-items: center;
+    margin-left: 10px; 
+}
+
+#search-bar {
+    width: 400px;
+    padding: 5px 10px;
+    border: 5px solid #3498db;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.3s ease;
+    margin-top: 5px;
+}
+
+#search-bar:focus {
+    border-color: #2ecc71;
+}
+
+#search {
+    padding: 5px 10px;
+    margin-left: 30px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#search:hover {
+    background-color: #2980b9;
+}
+
+section {
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #4e584e;
+}
+
+tr {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #b6a7a7;
+}
+
+th {
+    background-color:  #f0ec7e;
+    color: #121317f5;
+}
+
+h2 {
+    color: #333;
+    margin-top: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#closecandidate {
+    background-color: #d0c4c4;
+    position: absolute;
+    top: 140px; 
+    left: 965px;
+    align-self: flex-end;
+   padding: 1px;
+    font-size: 25px; 
+    font-weight: bold; 
+    color: rgb(255, 0, 0);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: #ffffff; 
+} 
+
+
+
+
+#closevoter {
+    background-color: #d0c4c4;
+    position: absolute;
+    top: 140px; 
+    left: 965px;
+    align-self: flex-end;
+   padding: 1px;
+    font-size: 25px; 
+    font-weight: bold; 
+    color: rgb(255, 0, 0);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+
+
+#closecform{
+    background-color: #fff;
+    position: absolute;
+    top: 123px; 
+    left: 1157px;
+    align-self: flex-end;
+   padding: 1px;
+    font-size: 35px; 
+    font-weight: bold; 
+    color: rgb(255, 0, 0);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+#closevform{
+    background-color: #fff;
+    position: absolute;
+    top: 120px; 
+    left: 1155px;
+    align-self: flex-end;
+   padding: 1px;
+    font-size: 35px; 
+    font-weight: bold; 
+    color: rgb(255, 0, 0);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+#closetable{
+    background-color: #f6f5fb;
+    position: absolute;
+    top: 170px; 
+    left: 25px;
+    align-self: flex-end;
+   padding: 1px;
+   border-radius: 30px;
+    font-size: 35px; 
+    font-weight: bold; 
+    color: rgb(47, 45, 45);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+#closevtable{
+    background-color: #f6f5fb;
+    position: absolute;
+    top: 170px; 
+    left: 25px;
+    align-self: flex-end;
+   padding: 1px;
+   border-radius: 30px;
+    font-size: 35px; 
+    font-weight: bold; 
+    color: rgb(47, 45, 45);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+
+
+/* logout ko  button */
+#logoutPopup {
+    display: none; /* Hidden by default */
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(111, 106, 106, 0.5); /* Black background with transparency */
+    z-index: 1000; /* Sit on top */
+    justify-content: center;
+    align-items: center;
+}
+.popup-content {
+    background-color: rgb(199, 181, 181);
+    padding: 20px;
+    border-radius: 30px;
+    text-align: center;
+}
+.popup-buttons {
+    margin-top: 15px;
+    
+}
+
+
+#confirmLogout {
+background-color: #28a745; /* Green */
+color: white;
+border: none;
+padding: 10px 15px;
+border-radius: 15px;
+cursor: pointer;
+font-size: 16px;
+margin: 0 5px;
+}
+
+#cancelLogout {
+background-color: #dc3545; /* Red */
+color: white;
+border: none;
+padding: 10px 15px;
+border-radius: 15px;
+cursor: pointer;
+font-size: 16px;
+margin: 0 5px;
+}
+
+#confirmLogout:hover {
+background-color: #218838;
+}
+
+#cancelLogout:hover {
+background-color: #c82333; 
+}
+
+
+
+
+#closeinstance {
+    position: absolute;
+    top: 190px;
+    right: 20px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: pointer;
+ 
+    background-color:rgb(255, 0, 0);
+    border: none;
+    z-index: 20;
+    border-radius: 8px;
+}
+
+#closeinstance:hover {
+    color: #ffffff;
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+#popupIframee{
+    margin-right: 800px;
+    margin-top: 20px;
+}
+
+
+
+
+#profile{
+    border-radius: 20px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+.search-container {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+.search-bar {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.search-button {
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+.search-button:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: transparent;
+    color: #120b0b;
+    text-align: center;
+    padding: 10px 0;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    pointer-events: none; /* Allows clicks to pass through the footer */
+}
+
+footer * {
+    pointer-events: auto; /* Enables interaction with footer's child elements */
+}
+
+
+footer p {
+    margin: 5px 0;
+}
+
+footer p:first-child {
+    font-weight: bold;
+}
+
+footer p:last-child {
+    font-style: italic;
+}
+
+
+
+
+
+
+
+

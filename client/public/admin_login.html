@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Admin Login for Voting System" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/client/style/App.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
+    <title>Admin Login</title>
+    <script src="/client/src/admin_login_app.js" defer></script>
+    
+</head>
+<body>
+    <div class="intro">
+        <h1 align="center" style="color: rgb(5, 0, 9);">ADMIN PANEL</h1>
+        <h2 align="center" style="color: rgb(5, 0, 9);">Please Login using provided credential</h2>
+    </div>
+
+    <div class="container mt-5">
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="user-name"><h3>User Name</h3></label>
+                <input type="text" class="form-control" id="user-name" name="user_name" placeholder="User Name" required>
+            </div>
+            <div class="form-group">
+                <label for="email"><h3>Email</h3></label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email ID" required>
+            </div>
+
+
+
+
+            <div class="form-group">
+                <label for="password"><h3>Password</h3></label>
+                <div class="password-container">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required> 
+                    
+                </div>
+            </div>
+
+
+
+            <!-- <div class="form-group">
+                <label for="password"><h3>Password</h3></label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+            </div> -->
+            <div class="form-group">
+                <label for="admin"><h3>Admin Type</h3></label>
+                <input type="number" class="form-control" id="admin" name="admin_no" placeholder="Admin Type eg.(0,1,2..)" required>
+            </div>
+            <button type="submit" class="btn btn-primary"><b>Login</b></button>
+            <div id="message" style="margin-top: 15px;"></div>
+        </form>
+    </div>
+
+
+
+
+
+    <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    togglePassword.addEventListener('click', function() {
+        // Toggle the type attribute
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+
+        // Toggle the eye icon (open/closed)
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
+    </script>
+</body>
+</html>

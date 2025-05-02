@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <script src="/client/src/B_registervoterId.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+  <link rel="stylesheet" href="/client/style/B_register.css">
+  
+  <title>Register Voter</title>
+</head>
+<body>
+  <h2>You must have your voter ID registered before participating in this election to ensure security and integrity</h2>
+  <form id="voterForm" onsubmit="registerVoter(); return false;">
+    <label for="voter_id">Enter Voter ID:</label>
+    <input type="number" id="voter_id" placeholder="Enter voter ID" required>
+    <button type="submit">Register</button>
+    <div id="messageDiv" style="display:none; padding: 10px; margin-top: 20px; border-radius: 5px; font-size: 16px;"></div>
+  </form>
+
+<div id="messageDiv" style="display:none; padding: 10px; margin-top: 20px; border-radius: 5px; font-size: 16px;"></div>
+
+ 
+
+<script>
+let isValidated = false; 
+
+document.getElementById('voterForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const voter_id = document.getElementById('voter_id').value.trim(); 
+    const token = sessionStorage.getItem('jwt'); 
+
+    if (!token) {
+        showMessage('No token found. Please login first.', 'error');
+        window.location.href = '/client/public/B_Vote_candidate.html'; // Redirect to login page
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:3000/validate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Send the token in the Authorization header
+            },
+            body: JSON.stringify({ voter_id }) 
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showMessage('Validation Successful.', 'success');
+            isValidated = true; // Set the validation flag to true
+
+            document.cookie = `userID=${voter_id}; path=/; secure; samesite=strict`;
+
+
+            // Proceed to MetaMask interaction only if validation is successful
+            await registerVoter();
+
+        } else {
+            if (data.message === "Error: Voter ID does not match the token.") {
+                showMessage('Error: Voter ID does not match the token.', 'error');
+                window.location.href = '/client/public/B_register_voterid.html'; // Redirect without triggering MetaMask
+            } else {
+                showMessage(`Error: ${data.message}`, 'error');
+                window.location.href = '/client/public/B_register_voterid.html'; // Redirect on other errors
+            }
+        }
+    } catch (err) {
+        console.error('Validation Error:', err);
+        showMessage('Error validating. Check the console for details.', 'error');
+    }
+});
+
+let web3;
+let contract;
+
+document.addEventListener("DOMContentLoaded", async () => {
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+
+        try {
+            const response = await fetch('http://localhost:3000/api/contract');
+            const data = await response.json();
+
+            if (!data.contractAddress || data.contractAddress === 'No address found') {
+                showMessage('Contract address not found. Please check the backend.', 'error');
+                return;
+            }
+
+            const contractAddress = data.contractAddress;
+            const abi = [
+                {
+                    "inputs": [{ "internalType": "uint256", "name": "_voterID", "type": "uint256" }],
+                    "name": "registerVoter",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ];
+
+            contract = new web3.eth.Contract(abi, contractAddress);
+
+            console.log("Web3 initialized and contract loaded");
+        } catch (error) {
+            console.error("Error fetching contract address from API:", error);
+            showMessage('Failed to fetch contract address from the server.', 'error');
+        }
+    } else {
+        showMessage("MetaMask is not installed. Please install MetaMask to use this app.", 'error');
+        console.error("MetaMask not found");
+    }
+});
+
+async function registerVoter() {
+    try {
+        if (!web3 || !contract) {
+            showMessage("Web3 is not initialized. Please refresh the page.", 'error');
+            return;
+        }
+
+        if (!isValidated) {
+            // If the user hasn't validated successfully, we prevent MetaMask interaction
+            showMessage("Validation failed. MetaMask interaction is blocked.", 'error');
+            return;
+        }
+
+        // Request MetaMask for accounts only after validation is successful
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        const accounts = await web3.eth.getAccounts();
+        const account = accounts[0];
+
+        const voterIdInput = document.getElementById("voter_id");
+        const voterID = parseInt(voterIdInput.value);
+
+        if (isNaN(voterID) || voterID <= 0) {
+            showMessage("Please enter a valid voter ID.", 'error');
+            return;
+        }
+
+        // Send transaction to register the voter
+        await contract.methods.registerVoter(voterID).send({ from: account })
+            .on('transactionHash', function(hash) {
+                console.log("Transaction sent with hash: ", hash);
+            })
+            .on('receipt', function(receipt) {
+                // Transaction was confirmed
+                console.log("Transaction confirmed: ", receipt);
+                showMessage(`Voter ID ${voterID} registered successfully.`, 'success');
+                window.location.href = '/client/public/B_Vote_candidate.html'; // Redirect to voting page
+            })
+            .on('error', function(error) {
+                // Transaction failed or rejected
+                console.error("Error confirming transaction:", error);
+                showMessage("Transaction failed or rejected. Redirecting to home page.", 'error');
+                setTimeout(() => {
+                    window.location.href = '/client/public/index.html'; // Redirect to the home page if transaction failed or rejected
+                }, 3000); // Wait for 3 seconds before redirecting
+            });
+        
+    } catch (error) {
+        console.error("Error registering voter:", error);
+        showMessage("Failed to register voter. Please try again.", 'error');
+    }
+}
+
+// Function to show messages in the message div
+function showMessage(message, type) {
+    const messageDiv = document.getElementById('messageDiv');
+
+    // Set message content
+    messageDiv.textContent = message;
+
+    // Set the color based on message type (success or error)
+    if (type === 'success') {
+        messageDiv.style.backgroundColor = '#4CAF50';
+        messageDiv.style.color = 'white';
+    } else if (type === 'error') {
+        messageDiv.style.backgroundColor = '#f44336';
+        messageDiv.style.color = 'white';
+    }
+
+    // Make the message div visible
+    messageDiv.style.display = 'block';
+
+    // Optionally hide the message after a few seconds
+    setTimeout(() => {
+        messageDiv.style.display = 'none';
+    }, 5000);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// <!-- yo le chahi back garna mildaina current page lai -->
+ 
+    history.pushState(null, document.title, location.href);
+    window.addEventListener('popstate', function(event) {
+      history.pushState(null, document.title, location.href);
+    });
+
+
+
+
+
+
+
+</script>
+
+ 
+</body>
+
+<footer>
+    <p>&copy; 2025 Election System. All rights reserved.</p>
+    <p>Powered by Blockchain Technology</p>
+  </footer>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

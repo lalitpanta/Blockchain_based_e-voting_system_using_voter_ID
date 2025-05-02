@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Electronic-voting</title>
+    <link rel="stylesheet" href="/client/style/admin.css">
+    <script src="/client/src/getAllvoter.js"></script>
+    <script src="/client/src/getAllCandidate.js"></script>
+    
+</head>
+<body>
+    <header>
+        <h1>Electronic-<b style="color:rgb(83, 83, 40)">V</b>oting System Admin Dashboard</h1>
+        
+
+
+
+
+    
+
+
+
+        <button type="button" id="logout">Logout</button>
+    </header>
+    <div id="hamburger">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+
+    <nav>
+
+        <iframe src="/client/public/p.html" width="200px" height="330px" id="profile"></iframe>
+       
+        <button type="button" id="instant">Create New Election</button>
+        <br>
+       <button type="button" id="view">View Result</button>
+       <br>
+        <button type="button" id="add">Add Voter List</button>
+        <br>
+        <button type="button" id="Dashboard">View All Voter List</button>
+        <br>
+        <button type="button" id="voterr">Add Candidate</button>
+        <br>
+        
+        <button type="button" id="candidate">View All Candidate</button>
+        <br>
+        <button type="button" id="delete">Delete Voter</button>
+        <br>
+        <button type="button" id="dcan">Delete Candidate</button>
+        <br>
+        
+    </nav>
+
+    <section id="voterListSection">
+        <div class="search-container">
+            <input type="text" id="search-bar" class="search-bar" placeholder="Enter Voter ID..." />
+            <button class="search-button" onclick="searchFunction()">Search</button>
+        </div>
+        <h2>Voter List</h2>
+        <br>
+        <br>
+        <table id="tutorsTable">
+            <tr>
+                <th>Citizenship Number</th>
+                <th>Full Name</th>
+                <th>Date Of Birth</th>
+                <th>Gender</th>
+               <th>Membership Number</th>
+                <th>Voter Id Number</th>
+                <th>Voter Id Issued Date</th>
+                <th>Voter Id Issued By</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Voter Card</th>
+            </tr>
+            <tbody id="voterdata"></tbody>
+        </table>
+    </section>
+
+    <section id="voterrrListSection">
+
+        <div class="search-container">
+            <input type="text" id="candidate-search-bar" class="search-bar" placeholder="Enter NEA Membership Number..." />
+            <button class="search-button" onclick="searchCandidate()">Search</button>
+        </div>
+       
+        <h2>Candidate List</h2>
+        <br>
+        <br>
+        <table id="voterrsTable">
+            
+            <tr>
+                <th>Citizenship Number</th>
+                <th>Full Name</th>
+                <th>Date Of Birth</th>
+                <th>Gender</th>
+                <th>Membership Number</th>
+                <th>Voter Id Number</th>
+                <th>Position</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Candidate Id</th>
+                <th>Party Name</th>
+                <th>Voting Date</th>
+                <th>Start Time</th>
+                <th>Ending Time</th>
+                
+            </tr>
+            <tbody id="candidatedata"></tbody>
+        </table>
+    </section>
+
+    <!-- Logout Confirmation Popup -->
+    <div id="logoutPopup">
+        <div class="popup-content">
+            <b>Are you sure you want to logout?</b>
+            <div class="popup-buttons">
+                <button id="confirmLogout">Yes</button>
+                <button id="cancelLogout">No</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="popupIframe">
+        <div id="popupContent">
+            <div>
+                <!-- <span class="close" id="closevform">&times;</span> -->
+                <iframe src="/client/public/form.html" width="100%" height="1100px"></iframe>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="popuppIframe">
+        <div id="popuppContent">
+            <div>
+                <iframe src="/client/public/B_Result_for_Voter.html" width="100%" height="630px"></iframe>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="popupppIframe">
+        <div id="popupppContent">
+            <div>
+                <!-- <span class="close" id="closecform">&times;</span> -->
+                <iframe src="/client/public/form_candidate.html" width="100%" height="1100px"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteVoterIframe" class="popup">
+        <div id="deleteVoterContent">
+            <!-- <span class="close" id="closevoter">&times;</span> -->
+            <iframe src="/client/public/Vdelete.html" width="100%" height="1100px"></iframe>
+        </div>
+    </div>
+
+    <div id="deletecandidateIframe" class="popup">
+        <div id="deletecandidateContent">
+            <!-- <span class="close" id="closecandidate">&times;</span> -->
+            <iframe src="/client/public/Cdelete.html" width="100%" height="1100px"></iframe>
+        </div>
+    </div>
+
+
+
+
+
+
+    <div id="instancecandidateIframe" class="popup">
+        <div id="instancecandidateContent">
+            <!-- <span class="close" id="closeinstance">&times;</span> -->
+            <iframe src="/client/public/CREATE_NEW_ELECTION.html" width="1530px" height="500px"></iframe>
+        </div>
+    </div>
+
+ 
+
+
+    
+
+
+
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const nav = document.querySelector('nav');
+            const voterListSection = document.getElementById('voterListSection');
+            const dashboardButton = document.getElementById('Dashboard');
+            const signupBtn = document.getElementById('add');
+            const popupIframe = document.getElementById('popupIframe');
+            const voterrrListSection = document.getElementById('voterrrListSection');
+            const candidateButton = document.getElementById('candidate');
+            const voterrButton = document.getElementById('voterr');
+            const popupppIframe = document.getElementById('popupppIframe');
+            const deleteButton = document.getElementById('delete');
+            const deleteVoterIframe = document.getElementById('deleteVoterIframe');
+            const deleteCandidateButton = document.getElementById('dcan');
+            const deleteCandidateIframe = document.getElementById('deletecandidateIframe');
+            const logoutButton = document.getElementById('logout');
+            const logoutPopup = document.getElementById('logoutPopup');
+            const confirmLogoutButton = document.getElementById('confirmLogout');
+            const cancelLogoutButton = document.getElementById('cancelLogout');
+            const instantButton = document.getElementById('instant');
+            const instancecandidateIframe = document.getElementById('instancecandidateIframe');
+            const viewResultButton = document.getElementById('view');
+            const popuppIframe = document.getElementById('popuppIframe');
+
+            voterListSection.style.display = 'none';
+            popupIframe.style.display = 'none';
+            voterrrListSection.style.display = 'none';
+            popupppIframe.style.display = 'none';
+            deleteVoterIframe.style.display = 'none';
+            deleteCandidateIframe.style.display = 'none';
+            logoutPopup.style.display = 'none';
+            instancecandidateIframe.style.display = 'none';
+            popuppIframe.style.display = 'none';
+
+            function closeAll() {
+                voterListSection.style.display = 'none';
+                popupIframe.style.display = 'none';
+                voterrrListSection.style.display = 'none';
+                popupppIframe.style.display = 'none';
+                deleteVoterIframe.style.display = 'none';
+                deleteCandidateIframe.style.display = 'none';
+                logoutPopup.style.display = 'none';
+                instancecandidateIframe.style.display = 'none';
+                popuppIframe.style.display = 'none';
+            }
+
+            function hideNav() {
+                nav.classList.remove('show');
+                nav.style.transform = 'scaleY(0)';
+                nav.style.opacity = '0';
+                setTimeout(() => {
+                    nav.style.display = 'none';
+                }, 500);
+            }
+
+            hamburger.addEventListener('click', function() {
+                nav.classList.toggle('show');
+                if (nav.classList.contains('show')) {
+                    nav.style.display = 'flex';
+                    setTimeout(() => {
+                        nav.style.transform = 'scaleY(1)';
+                        nav.style.opacity = '1';
+                    }, 0);
+                } else {
+                    hideNav();
+                }
+            });
+
+            function handleButtonClick(section) {
+                closeAll();
+                section.style.display = 'block';
+                hideNav();
+            }
+
+            dashboardButton.addEventListener('click', function() {
+                handleButtonClick(voterListSection);
+            });
+
+            signupBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                handleButtonClick(popupIframe);
+            });
+
+            candidateButton.addEventListener('click', function() {
+                handleButtonClick(voterrrListSection);
+            });
+
+            voterrButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                handleButtonClick(popupppIframe);
+            });
+
+            deleteButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                handleButtonClick(deleteVoterIframe);
+            });
+
+            deleteCandidateButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                handleButtonClick(deleteCandidateIframe);
+            });
+
+            logoutButton.addEventListener('click', function() {
+                handleButtonClick(logoutPopup);
+            });
+
+            confirmLogoutButton.addEventListener('click', function() {
+                window.location.href = '/client/public/admin_login.html';
+            });
+
+            cancelLogoutButton.addEventListener('click', function() {
+                logoutPopup.style.display = 'none';
+            });
+
+            instantButton.addEventListener('click', function() {
+                handleButtonClick(instancecandidateIframe);
+            });
+
+            viewResultButton.addEventListener('click', function() {
+                handleButtonClick(popuppIframe);
+            });
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+
+
+
+
+
+
+<footer>
+    <p>&copy; 2025 Election System. All rights reserved.</p>
+    <p>Powered by Blockchain Technology</p>
+  </footer>
+
+
+
+</body>
+</html>

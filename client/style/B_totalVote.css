@@ -1,0 +1,24 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #cc0707;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+div {
+    background-color: rgb(121, 128, 128);
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    text-align: center;
+}
+
+#voterCount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile</title>
+    <style>
+ body {
+    font-family: 'Arial', sans-serif;
+    background-color: #c31820;
+    margin: 0;
+    padding: 0;
+   color: aliceblue;
+    overflow: hidden; 
+    
+}
+
+.container {
+    margin-left: 10px;
+    max-width: 90%;
+    margin: 0 auto;
+    background-color: #c31820;
+    border-radius: 12px;
+    overflow: hidden;
+    
+}
+
+   
+    </style>
+</head>
+<body>
+
+    
+
+    <div class="container">
+       
+        <div class="profile-header">
+           
+            <div class="profile-info">
+                <p><strong>User Name:</strong> <span id="user_name"></span></p>
+                <p><strong>Email:</strong> <span id="email"></span></p>
+                <p><strong>Admin:</strong> <span id="admin_no"></span></p>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const adminData = JSON.parse(sessionStorage.getItem('userData'));
+
+            if (adminData) {
+                document.getElementById('user_name').textContent = adminData.user_name;
+                document.getElementById('email').textContent = adminData.email;
+                document.getElementById('admin_no').textContent = adminData.admin_no;
+               
+            } else {
+                document.body.innerHTML = '<p>No admin data available. Please log in.</p>';
+            }
+        });
+    </script>
+
+</body>
+</html>

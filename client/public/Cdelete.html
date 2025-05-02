@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/client/style/Cdelete.css">
+    <title>Delete Candidate</title>
+   
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Candidate</h2>
+        <form id="deleteCandidateForm">
+            <div class="input-field">
+                <label for="candidate_id">Candidate ID:</label>
+                <input type="text" id="candidate_id" name="candidate_id" placeholder="Enter Candidate ID" required>
+            </div>
+            <div class="input-field">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter Full Name" required>
+            </div>
+            <button type="submit">Delete Candidate</button>
+        </form>
+        <div id="responseMessage" class="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('deleteCandidateForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const candidateId = document.getElementById('candidate_id').value;
+            const name = document.getElementById('name').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/deleteCandidate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ candidate_id: candidateId, name: name })
+                });
+
+                const data = await response.json();
+                document.getElementById('responseMessage').innerText = data.message;
+                if (data.statusCode !== 200) {
+                    document.getElementById('responseMessage').style.color = 'red';
+                   
+                } else {
+                    document.getElementById('responseMessage').style.color = 'green';
+                   
+                }
+            } catch (error) {
+                document.getElementById('responseMessage').innerText = 'An error occurred: ' + error.message;
+                document.getElementById('responseMessage').style.color = 'red';
+            }
+        });
+    </script>
+
+</body>
+</html>

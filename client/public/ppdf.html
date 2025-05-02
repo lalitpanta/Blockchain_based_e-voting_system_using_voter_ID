@@ -1,0 +1,103 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voter Card Confirmation</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div style="text-align: center;">
+    <h1>Voter Card Confirmation</h1>
+    <label for="voter_id">Enter Voter ID:</label>
+    <input type="text" id="voter_id" placeholder="Enter Voter ID">
+    <button onclick="getVoterCard()">Download Voter Card</button>
+    <div id="error-message" style="color: red;"></div>
+  </div>
+
+  <script>
+    function getVoterCard() {
+      const voterId = document.getElementById('voter_id').value;
+
+      if (!voterId) {
+        document.getElementById('error-message').textContent = "Voter ID is required.";
+        return;
+      }
+
+      axios.get(`http://localhost:3000/voter/${voterId}`, { responseType: 'blob' })
+        .then((response) => {
+          // Create a link element
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(response.data);
+          link.download = `voter-${voterId}.pdf`;
+          link.click();
+        })
+        .catch((error) => {
+          document.getElementById('error-message').textContent = "Error fetching voter details. Please check the Voter ID.";
+        });
+    }
+  </script>
+</body>
+</html> -->
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voter Card Confirmation</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div style="text-align: center;">
+    <h1>Voter Card Confirmation</h1>
+    <label for="voter_id">Enter Voter ID:</label>
+    <input type="text" id="voter_id" placeholder="Enter Voter ID">
+    <button onclick="getVoterCard()">Download Voter Card</button>
+    <div id="error-message" style="color: red;"></div>
+    <div id="voter-photo" style="margin-top: 20px;"></div>
+  </div>
+
+  <script>
+    function getVoterCard() {
+      const voterId = document.getElementById('voter_id').value;
+
+      if (!voterId) {
+        document.getElementById('error-message').textContent = "Voter ID is required.";
+        return;
+      }
+
+      axios.get(`http://localhost:3000/voter/${voterId}`, { responseType: 'blob' })
+        .then((response) => {
+          // Create a link element
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(response.data);
+          link.download = `voter-${voterId}.pdf`;
+          link.click();
+        })
+        .catch((error) => {
+          document.getElementById('error-message').textContent = "Error fetching voter details. Please check the Voter ID.";
+        });
+
+      axios.get(`http://localhost:3000/voter/photo/${voterId}`)
+        .then((response) => {
+          const img = document.createElement('img');
+          img.src = `data:image/jpeg;base64,${response.data.photo}`;
+          img.style.width = '150px';
+          img.style.height = '150px';
+          document.getElementById('voter-photo').innerHTML = '';
+          document.getElementById('voter-photo').appendChild(img);
+        })
+        .catch((error) => {
+          document.getElementById('voter-photo').innerHTML = "";
+        });
+    }
+  </script>
+</body>
+</html>
+

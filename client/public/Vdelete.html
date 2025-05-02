@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/client/style/Vdelete.css">
+    <title>Delete Voter</title>
+    
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Voter</h2>
+        <form id="deleteVoterForm">
+            <div class="input-field">
+                <label for="voterId">Voter ID:</label>
+                <input type="text" id="voterId" name="voter_id" placeholder="Enter Voter ID" required>
+            </div>
+            <div class="input-field">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter Full Name" required>
+            </div>
+            <button type="submit">Delete Voter</button>
+        </form>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('deleteVoterForm');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent normal form submission
+
+                const voterId = document.getElementById('voterId').value;
+                const name = document.getElementById('name').value;
+
+                fetch('http://localhost:3000/deleteVoter', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ voter_id: voterId, name: name }) 
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Voter Not Found!!');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const messageDiv = document.getElementById('message');
+                    if (data.statusCode === 200) {
+                        messageDiv.textContent = 'Voter deleted successfully.';
+                        messageDiv.style.color = 'green';
+                        form.reset();
+                    } else {
+                        messageDiv.textContent = 'Error deleting voter.';
+                        messageDiv.style.color = 'red';
+                    }
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                    document.getElementById('message').textContent = 'Error: ' + error.message;
+                    document.getElementById('message').style.color = 'red';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition</title>
+    <style>
+      
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #output {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #333;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Face Recognition</h1>
+        <button id="startButton">Start Face Recognition</button>
+        <div id="output">Click the button to start face recognition.</div>
+    </div>
+
+    <script>
+        // Ensure the DOM is fully loaded before accessing elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const startButton = document.getElementById('startButton');
+            const outputDiv = document.getElementById('output');
+
+            // Function to handle the button click event
+            startButton.addEventListener('click', async () => {
+                outputDiv.textContent = 'Starting face recognition...';
+
+                try {
+                    // Step 1: Capture an image by calling the /capture-image API
+                    const captureResponse = await fetch('http://localhost:3000/capture-image', {
+                        method: 'POST'
+                    });
+
+                    if (!captureResponse.ok) {
+                        const errorData = await captureResponse.json();
+                        throw new Error(errorData.error || 'Failed to capture image.');
+                    }
+
+                    const captureData = await captureResponse.json();
+                    console.log(captureData.message); // Log the capture success message
+
+                    // Step 2: Send a POST request to the backend to start the face recognition process
+                    const recognitionResponse = await fetch('http://localhost:3000/run-face-recognition', {
+                        method: 'POST'
+                    });
+
+                    if (recognitionResponse.ok) {
+                        const data = await recognitionResponse.json();
+                        if (data.error) {
+                            outputDiv.textContent = `Error: ${data.error}`;
+                        } else if (data.message === "You have already voted.") {
+                            outputDiv.textContent = data.message;
+                        } else {
+                          
+                           
+                                window.location.href = '/client/public/index.html';
+                            
+                        }
+                    } 
+                } catch (error) {
+                    outputDiv.textContent = 'Error: ' + error.message;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

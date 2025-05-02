@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Registration</title>
+    <link rel="stylesheet" href="/client/style/form.css">
+    <script src="/client/src/candidate_form_app.js"></script>
+</head>
+<body>
+    <div class="containeer">
+        <header>Candidate Registration</header>
+        <form method="post" id="candidateForm">
+            <div class="form first">
+                <div class="details_personal">
+                    <span class="title">Personal Details</span>
+
+                    <div class="fields">
+
+                        <div class="input-field">
+                            <label><b>ELECTION TYPE</b></label>
+                            <input type="text" name="id" placeholder="enter election type.." required>
+                        </div>
+
+
+                        <div class="input-field">
+                            <label><b>CITIZENSHIP NUMBER</b></label>
+                            <input type="number" name="citizenship_no" placeholder="Citizenship No. (e.g., 12-00-12-00123)" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label><b>FULL NAME</b></label>
+                            <input type="text" name="name" placeholder="Full Name (e.g., Ram prashad)" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label><b>DATE OF BIRTH</b></label>
+                            <input type="date" name="dob" placeholder="Date Of Birth" required>
+                        </div>
+
+
+                        <div class="input-field">
+                            <label><B>GENDER</B></label>
+                            <input type="text" name="gender" placeholder="gender (e.g., Male, Female, Non-binary)" required>                           
+                            </div>
+
+                            <div class="input-field">
+                                <label><B>NEA MEMBERSHIP NUMBER</B></label>
+                                <input type="text" name="nea_membership_no" placeholder="Membership Number" required>                           
+                                </div>
+    
+                               
+
+                            <div class="input-field">
+                                <label><B>VOTER ID NUMBER</B></label>
+                                <input type="text" name="voter_id" placeholder="Voter ID Number (e.g., 1234567890)" required>
+                            </div>
+
+                        <div class="input-field">
+                            <label><B>VOTER ID ISSUED DATE</B></label>
+                            <input type="DATE" name="issued_date" placeholder="" required>
+                        </div>
+
+                            <div class="input-field">
+                            <label><B>VOTER ID ISSUED BY</B></label>
+                            <input type="text" name="issued_name" placeholder="Authorized Person's Full Name" required>                           
+                            </div>
+    
+                            <div class="input-field">
+                                <label><B>POSITION</B></label>
+                                <input type="text" name="position" placeholder="Position (e.g., Chief Election Officer)" required>
+
+                            </div>
+
+                            <div class="input-field">
+                                <label><B>CONTACT</B></label>
+                                <input type="NUMBER" name="contact" placeholder="Phone Number (e.g., +977-98XXXXXXXX)" required>
+                            </div>
+
+                            <div class="input-field">
+                                <label><B>EMAIL</B></label>
+                                <input type="email" name="email" placeholder="Email Address (e.g., example@mail.com)" required>
+                            </div>
+                            <div class="input-field">
+                                <label><B>CANDIDATE ID</B></label>
+                                <input type="NUMBER" name="candidate_id" placeholder="ID (e.g., 234)" required>
+
+                            </div>
+
+
+                            <div class="input-field">
+                                <label><B>PARTY NAME</B></label>
+                                <input type="text" name="party" placeholder="party name(e.g., nepali party)" required>
+
+                            </div>
+
+
+                            <div class="input-field">
+                                <label><B>VOTING DATE</B></label>
+                                <input type="DATE" name="voting_date" placeholder="" required>
+
+                            </div>
+
+
+                            <div class="input-field">
+                                <label><B>START TIME</B></label>
+                                <input type="time" name="start_time" placeholder="" required>
+                            </div>
+
+
+                            <div class="input-field">
+                                <label><B>ENDING TIME</B></label>
+                                <input type="TIME" name="ending_time" placeholder="Position (e.g., Chief Election Officer)" required>
+
+                            </div>
+
+                       
+   
+<div class="buttons">
+    <button class="nextBtn">
+        <spann class="btntext">Submit</spann>
+    </button>
+</div>
+               </div>
+            </div>
+        </form>
+        <div id="message" style="color: red; margin-top: 10px;"></div>
+
+    </div>
+   
+</body>
+</html>

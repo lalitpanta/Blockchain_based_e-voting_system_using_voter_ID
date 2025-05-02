@@ -1,0 +1,101 @@
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 90vh;
+  background: url(/client/Pictures/bkj1.jpg);
+  background-color: #140f0f46;
+  background-size: cover;
+}
+
+.container {
+  width: 450px;
+  position: absolute;
+  top: 200px;
+  max-width: 500px;
+  background-color: rgba(47, 43, 43, 0.65);
+  padding: 30px;
+  border-radius: 5px;
+  box-shadow: 0px 3px 10px rgba(237, 231, 231, 0.992);
+  text-align: center;
+ 
+}
+
+ .intro {
+  margin-bottom: 200px;
+  color: #4e4d50;
+  position: absolute;
+  top: 10px;
+ 
+ }
+ 
+
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+  
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  color: #0b0505;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 95%;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  color: #0a0101;
+  background-color: rgb(248, 241, 241); 
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #03100f;
+  color: #321e1e;
+  border: none;
+  border-radius: 5px;
+  font-size: 19px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #c2c9c9;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:active {
+  transform: translateY(2px);
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+}
+button {
+  width: 50%; 
+  padding: 10px; 
+  background-color: #76c267;
+  color: #161313;
+  border: none;
+  border-radius: 5px;
+  font-size: 19px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0 auto; 
+}

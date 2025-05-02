@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronic Voting</title>
+    <script src="/client/src/get_candidate.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0');
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+         
+            background: linear-gradient(to bottom, #ead5d5, #0e4283);
+            overflow: hidden; /* Hide overflow for full screen */
+            height: 100vh; /* Full height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #242121;
+            color: #c4a2a2;
+            padding: 10px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #ecd542;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            border-radius: 20px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            margin-right: 20px;
+            font-weight: bold;
+            transition: color 0.3s;
+            background-color: #847a3c;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 20px;
+        }
+
+        #logout {
+            margin-right: 20px;
+            border-radius: 20px;
+        }
+
+        nav a:hover {
+            color: #ff0000;
+        }
+
+        section {
+            flex-grow: 1; /* Allow section to grow */
+            padding: 20px;
+            overflow-y: auto; /* Allow vertical scrolling */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #101110;
+        }
+
+        th {
+            background-color: #4d112a;
+            color: #fff;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        /* Quote Styles */
+        .quote {
+            font-size: 1.5em;
+            color: #fff;
+            text-align: center;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #757879;
+            color: #c4a2a2;
+            text-align: center;
+            padding: 20px;
+            margin-top: 10px;
+            width: 100%;
+            position: relative;
+        }
+
+        footer p {
+            margin: 0px 0;
+        }
+
+        /* Popup styles for logout */
+        .popup {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0, 0, 0, 0.5); 
+            justify-content: center; 
+            align-items: center; 
+        }
+
+        .popupContent button {
+            margin: 5px; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 15px; 
+            cursor: pointer; 
+        }
+
+        #confirmLogout {
+            background-color: green; 
+            color: white; 
+        }
+        #confirmLogout:hover {
+            background-color: rgb(18, 81, 100);
+        }
+        #cancelLogout {
+            background-color: red; 
+            color: white; 
+        }
+
+        #cancelLogout:hover {
+            background-color: rgb(18, 81, 100);
+        }
+        
+        /* Close button for iframe */
+        #closecform {
+            background-color: #ffffff;
+            position: absolute;
+            top: 135px; 
+            left: 1400px;
+            padding: 1px;
+            border-radius: 10px;
+            font-size: 25px; 
+            font-weight: bold; 
+            color: red;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        #cloosecform {
+            background-color: #ffffff;
+            position: absolute;
+            top: 135px; 
+            left: 1400px;
+            padding: 1px;
+            border-radius: 10px;
+            font-size: 25px; 
+            font-weight: bold; 
+            color: red;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        h3 {
+            text-align: center;
+            color: #fff;
+            margin-top: 30px;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Electronic-<b style="color:rgb(53,167,148)">V</b>oting System</h1>
+    </header>
+
+    <!-- Introductory Quote -->
+    <div class="quote" id="quote"></div>
+
+    <nav>
+        <button type="button" id="add">Vote Now</button>
+        <button type="button" id="Dashboard">See Result</button>
+        <button type="button" id="logout">Logout</button>
+    </nav>
+
+    <section id="voterListSection">
+      
+
+
+            <div>
+                <button id="cloosecform">&times;</button>
+                <div id="popupContent">
+                <iframe src="/public/Result_for_Voter.html" width="1500px" height="2000px"></iframe>
+            </div>
+
+            
+            
+        </table>
+    </section>
+
+    <div id="popupIframe">
+        <div id="popupContent">
+            <div>
+                <button id="closecform">&times;</button>
+                <iframe src="/public/vote_now.html" width="100%" height="500px"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation -->
+    <div id="logoutPopup" class="popup">
+        <div class="popupContent">
+            <h3>Are you sure you want to logout?</h3>
+            <button id="confirmLogout">Yes</button>
+            <button id="cancelLogout">No</button>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2024 Electronic Voting System. All Rights Reserved.</p>
+        <p>Powered by Blockchain Technology</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const voterListSection = document.getElementById('voterListSection');
+            const dashboardButton = document.getElementById('Dashboard');
+            const signupBtn = document.getElementById('add');
+            const popupIframe = document.getElementById('popupIframe');
+            const closeButton = document.getElementById('closecform');
+            const logoutButton = document.getElementById('logout');
+            const logoutPopup = document.getElementById('logoutPopup');
+            const confirmLogoutButton = document.getElementById('confirmLogout');
+            const cancelLogoutButton = document.getElementById('cancelLogout');
+            const quoteElement = document.getElementById('quote');
+
+            voterListSection.style.display = 'none';
+            popupIframe.style.display = 'none';
+
+            // Dynamic quote haha.....
+            const quotes = [
+                "Empower your voice. Cast your vote!",
+                "Your vote is your voice in democracy.",
+                "Vote with confidence; blockchain makes it secure!",
+                "Every vote counts; make yours matter!",
+                "Voting is not just a right, it's a responsibility."
+            ];
+            quoteElement.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
+            function closeAll() {
+                voterListSection.style.display = 'none';
+                popupIframe.style.display = 'none';
+                logoutPopup.style.display = 'none';
+            }
+
+            dashboardButton.addEventListener('click', function() {
+                if (voterListSection.style.display === 'none' || voterListSection.style.display === '') {
+                    closeAll();
+                    voterListSection.style.display = 'block';
+                } else {
+                    voterListSection.style.display = 'none';
+                }
+            });
+
+            signupBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                if (popupIframe.style.display === 'none' || popupIframe.style.display === '') {
+                    closeAll();
+                    popupIframe.style.display = 'block';
+                } else {
+                    popupIframe.style.display = 'none';
+                }
+            });
+
+            closeButton.addEventListener('click', function() {
+                popupIframe.style.display = 'none';
+            });
+
+           
+            logoutButton.addEventListener('click', function() {
+                logoutPopup.style.display = 'flex'; 
+            });
+
+            confirmLogoutButton.addEventListener('click', function() {
+                window.location.href = '/public/index.html'; 
+            });
+
+            cancelLogoutButton.addEventListener('click', function() {
+                logoutPopup.style.display = 'none';
+            });
+        });
+    </script>
+</body> 
+</html>
