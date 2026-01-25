@@ -423,3 +423,24 @@ Issue Management Dashboard
 │ [MEDIUM] PS-08: Paper Shortage     │
 │ Time: 10:15 | Status: Resolved ✅  │
 └─────────────────────────────────────┘
+<img width="1907" height="412" alt="Screenshot 2025-02-24 111347" src="https://github.com/user-attachments/assets/0dd2441c-1641-439e-afe8-a2c0a70861fd" />
+<img width="1897" height="848" alt="Screenshot 2025-02-24 111309" src="https://github.com/user-attachments/assets/5d7df76f-8a59-4aa1-8481-8213fde4597f" />
+<img width="1138" height="797" alt="Screenshot 2025-02-24 111019" src="https://github.com/user-attachments/assets/12fb7747-3ab5-403f-8291-af65ecb74893" />
+<img width="1061" height="779" alt="Screenshot 2025-02-24 111004" src="https://github.com/user-attachments/assets/14219b36-b677-4ac8-b286-260ffa2f8d5b" />
+<img width="433" height="415" alt="Screenshot 2025-02-24 110935" src="https://github.com/user-attachments/assets/af070ffd-31f9-4ce2-b5f6-c6935aab0637" />
+<img width="1920" height="1080" alt="Screenshot (180)" src="https://github.com/user-attachments/assets/295446d1-c66c-42b3-8134-6fea79a37964" />
+<img width="1918" height="783" alt="Screenshot 2025-07-02 144248" src="https://github.com/user-attachments/assets/c968996d-02f2-48cb-a22f-660c3b6a4911" />
+<img width="849" height="380" alt="Screenshot 2025-07-02 144210" src="https://github.com/user-attachments/assets/f3028d1e-fdf8-4cbd-9b17-afe4cd840a9d" />
+<img width="1896" height="853" alt="Screenshot 2025-02-24 170339" src="https://github.com/user-attachments/assets/b2c4a184-1089-48bc-a02c-9f81940e77ce" />
+<img width="1905" height="912" alt="Screenshot 2025-02-24 162324" src="https://github.com/user-attachments/assets/02fe9624-b0ab-48db-bb4a-e3e1ce937634" />
+<img width="691" height="587" alt="Screenshot 2025-02-24 162306" src="https://github.com/user-attachments/assets/1f8dd25b-5b11-482a-a128-86e0a2f5d529" />
+<img width="1895" height="871" alt="Screenshot 2025-02-24 122653" src="https://github.com/user-attachments/assets/68577f5b-b5ab-4fec-a6e0-149a0eb4f2c1" />
+<img width="1716" height="797" alt="Screenshot 2025-02-24 122506" src="https://github.com/user-attachments/assets/fc128983-5e38-444c-9b31-301f2883e2da" />
+<img width="1046" height="841" alt="Screenshot 2025-02-24 122439" src="https://github.com/user-attachments/assets/e7f2537f-939d-48bb-8b4f-c4141b4dd582" />
+<img width="1890" height="996" alt="Screenshot 2025-02-24 121753" src="https://github.com/user-attachments/assets/0dad2eff-f787-4b1d-8269-819cfb7e0aea" />
+<img width="541" height="385" alt="Screenshot 2025-02-24 111550" src="https://github.com/user-attachments/assets/d65bbe31-c372-4f40-a938-787616c5d020" />
+<img width="546" height="378" alt="Screenshot 2025-02-24 111539" src="https://github.com/user-attachments/assets/f3e1a4a4-0e1a-437d-80ff-4543386d670c" />
+<img width="1909" height="412" alt="Screenshot 2025-02-24 111522" src="https://github.com/user-attachments/assets/989fce4f-8f44-4b89-a8df-0bf6f9950421" />
+<img width="1091" height="724" alt="Screenshot 2025-02-24 111455" src="https://github.com/user-attachments/assets/c9a04bf1-597b-42a6-b465-ba7be57facaf" />
+<img width="421" height="656" alt="Screenshot 2025-02-24 111433" src="https://github.com/user-attachments/assets/cabb74c2-28ae-4709-86d5-17ca22d2b449" />
+
